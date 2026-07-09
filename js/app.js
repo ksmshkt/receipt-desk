@@ -1,6 +1,7 @@
 let currentReceiptId = null;
 let currentImagePath = null;
 let allReceipts = [];
+let compressedImageBlob = null;
 
 async function init() {
   const { data: { session } } = await client.auth.getSession();
@@ -31,18 +32,46 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
   window.location.href = 'index.html';
 });
 
-// Image preview
-document.getElementById('image-input').addEventListener('change', (e) => {
+// Image preview + auto OCR
+document.getElementById('image-input').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    document.getElementById('image-preview').src = ev.target.result;
-    document.getElementById('image-preview').classList.remove('hidden');
-    document.getElementById('upload-placeholder').classList.add('hidden');
-  };
-  reader.readAsDataURL(file);
+
+  compressedImageBlob = await compressImage(file);
+
+  const previewUrl = URL.createObjectURL(compressedImageBlob);
+  document.getElementById('image-preview').src = previewUrl;
+  document.getElementById('image-preview').classList.remove('hidden');
+  document.getElementById('upload-placeholder').classList.add('hidden');
+
+  showLoading(true);
+  try {
+    const base64 = await blobToBase64(compressedImageBlob);
+    const { data, error } = await client.functions.invoke('ocr-receipt', {
+      body: { image_base64: base64, media_type: 'image/jpeg' },
+    });
+    if (error) throw error;
+
+    if (data.date) document.getElementById('receipt-date').value = data.date;
+    if (data.store_name) document.getElementById('store-name').value = data.store_name;
+    if (data.amount != null) document.getElementById('amount').value = data.amount;
+    document.querySelectorAll('input[name="is_qualified"]').forEach(radio => {
+      radio.checked = radio.value === String(data.is_qualified);
+    });
+  } catch (err) {
+    alert('自動読み取りに失敗しました。手入力してください: ' + err.message);
+  } finally {
+    showLoading(false);
+  }
 });
+
+function blobToBase64(blob) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.readAsDataURL(blob);
+  });
+}
 
 // Save receipt
 document.getElementById('receipt-form').addEventListener('submit', async (e) => {
@@ -51,13 +80,11 @@ document.getElementById('receipt-form').addEventListener('submit', async (e) => 
 
   try {
     const { data: { user } } = await client.auth.getUser();
-    const file = document.getElementById('image-input').files[0];
 
     let imagePath = null;
-    if (file) {
-      const compressed = await compressImage(file);
+    if (compressedImageBlob) {
       imagePath = `${user.id}/${Date.now()}.jpg`;
-      const { error } = await client.storage.from('receipts').upload(imagePath, compressed, { contentType: 'image/jpeg' });
+      const { error } = await client.storage.from('receipts').upload(imagePath, compressedImageBlob, { contentType: 'image/jpeg' });
       if (error) throw error;
     }
 
@@ -77,6 +104,7 @@ document.getElementById('receipt-form').addEventListener('submit', async (e) => 
     document.getElementById('image-preview').classList.add('hidden');
     document.getElementById('upload-placeholder').classList.remove('hidden');
     document.getElementById('receipt-date').value = today();
+    compressedImageBlob = null;
 
     document.querySelector('.tab[data-tab="list"]').click();
 
