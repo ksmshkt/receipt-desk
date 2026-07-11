@@ -58,6 +58,11 @@ document.getElementById('image-input').addEventListener('change', async (e) => {
     document.querySelectorAll('input[name="is_qualified"]').forEach(radio => {
       radio.checked = radio.value === String(data.is_qualified);
     });
+    if (data.tax_rate != null) {
+      document.querySelectorAll('input[name="tax_rate"]').forEach(radio => {
+        radio.checked = radio.value === String(data.tax_rate);
+      });
+    }
   } catch (err) {
     alert('自動読み取りに失敗しました。手入力してください: ' + err.message);
   } finally {
@@ -94,6 +99,7 @@ document.getElementById('receipt-form').addEventListener('submit', async (e) => 
       store_name: document.getElementById('store-name').value || null,
       amount: document.getElementById('amount').value ? parseInt(document.getElementById('amount').value) : null,
       is_qualified: document.querySelector('input[name="is_qualified"]:checked').value === 'true',
+      tax_rate: parseInt(document.querySelector('input[name="tax_rate"]:checked').value),
       category: document.getElementById('category').value || null,
       memo: document.getElementById('memo').value || null,
       image_path: imagePath,
@@ -180,6 +186,9 @@ async function openReceipt(id) {
   document.querySelectorAll('input[name="modal_qualified"]').forEach(radio => {
     radio.checked = radio.value === String(r.is_qualified);
   });
+  document.querySelectorAll('input[name="modal_tax_rate"]').forEach(radio => {
+    radio.checked = radio.value === String(r.tax_rate);
+  });
 
   const imageContainer = document.getElementById('modal-image-container');
   const modalImage = document.getElementById('modal-image');
@@ -218,6 +227,7 @@ document.getElementById('modal-form').addEventListener('submit', async (e) => {
       store_name: document.getElementById('modal-store').value || null,
       amount: document.getElementById('modal-amount').value ? parseInt(document.getElementById('modal-amount').value) : null,
       is_qualified: document.querySelector('input[name="modal_qualified"]:checked').value === 'true',
+      tax_rate: document.querySelector('input[name="modal_tax_rate"]:checked') ? parseInt(document.querySelector('input[name="modal_tax_rate"]:checked').value) : null,
       category: document.getElementById('modal-category').value || null,
       memo: document.getElementById('modal-memo').value || null,
     }).eq('id', currentReceiptId);

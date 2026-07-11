@@ -54,6 +54,17 @@
         </div>
       </div>
       <div class="form-group">
+        <label>消費税率</label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="tax_rate" value="10" checked> 10%
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="tax_rate" value="8"> 8%（軽減税率）
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
         <label>勘定科目</label>
         <select id="category">
           <option value="">未選択</option>
@@ -120,6 +131,17 @@
             </label>
             <label class="radio-label">
               <input type="radio" name="modal_qualified" value="false"> 非適格
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>消費税率</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="modal_tax_rate" value="10"> 10%
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="modal_tax_rate" value="8"> 8%（軽減税率）
             </label>
           </div>
         </div>

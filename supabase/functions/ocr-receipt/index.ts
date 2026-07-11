@@ -13,8 +13,12 @@ const OUTPUT_SCHEMA = {
       type: "boolean",
       description: "適格請求書（インボイス）かどうか。T+13桁の登録番号がレシート上に記載されていればtrue、なければfalse",
     },
+    tax_rate: {
+      type: ["integer", "null"],
+      description: "消費税率。10（標準税率）または8（軽減税率、飲食料品のテイクアウト・持ち帰りなど）。判別できない場合はnull",
+    },
   },
-  required: ["date", "store_name", "amount", "is_qualified"],
+  required: ["date", "store_name", "amount", "is_qualified", "tax_rate"],
   additionalProperties: false,
 };
 
@@ -50,7 +54,7 @@ Deno.serve(async (req) => {
               { type: "image", source: { type: "base64", media_type, data: image_base64 } },
               {
                 type: "text",
-                text: "この日本のレシート画像から、日付・店名・合計金額・適格請求書かどうかを読み取ってください。",
+                text: "この日本のレシート画像から、日付・店名・合計金額・適格請求書かどうか・消費税率（8%か10%か）を読み取ってください。",
               },
             ],
           },
