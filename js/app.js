@@ -9,6 +9,12 @@ async function init() {
 
   document.getElementById('receipt-date').value = today();
   await loadReceipts();
+
+  const receiptId = new URLSearchParams(window.location.search).get('receipt');
+  if (receiptId) {
+    document.querySelector('.tab[data-tab="list"]').click();
+    await openReceipt(receiptId);
+  }
 }
 
 function today() {
@@ -169,6 +175,42 @@ function renderReceipts(receipts) {
 }
 
 document.getElementById('search-input').addEventListener('input', loadReceipts);
+
+// Export CSV
+document.getElementById('export-csv-btn').addEventListener('click', () => {
+  if (!allReceipts.length) { alert('エクスポートするレシートがありません'); return; }
+
+  const headers = ['日付', '店名・取引先', '金額', '適格請求書', '消費税率', '勘定科目', 'メモ', '画像リンク'];
+  const baseUrl = `${window.location.origin}${window.location.pathname}`;
+
+  const rows = allReceipts.map(r => [
+    r.date || '',
+    r.store_name || '',
+    r.amount != null ? r.amount : '',
+    r.is_qualified ? '適格' : '非適格',
+    r.tax_rate != null ? `${r.tax_rate}%` : '',
+    r.category || '',
+    r.memo || '',
+    r.image_path ? `${baseUrl}?receipt=${r.id}` : '',
+  ]);
+
+  const csv = [headers, ...rows].map(row => row.map(escapeCsvField).join(',')).join('\r\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `receipts_${today()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+function escapeCsvField(field) {
+  const str = String(field);
+  if (/[",\r\n]/.test(str)) {
+    return '"' + str.replace(/"/g, '""') + '"';
+  }
+  return str;
+}
 
 // Open receipt modal
 async function openReceipt(id) {
