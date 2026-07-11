@@ -17,8 +17,13 @@ const OUTPUT_SCHEMA = {
       type: ["integer", "null"],
       description: "消費税率。10（標準税率）または8（軽減税率、飲食料品のテイクアウト・持ち帰りなど）。判別できない場合はnull",
     },
+    payment_method: {
+      type: "string",
+      enum: ["現金", "クレジットカード", "電子マネー・QRコード決済", "銀行振込", "不明"],
+      description: "支払い方法。レシートに記載があれば読み取る（例：「○○Pay支払」→電子マネー・QRコード決済、カード会社名の記載→クレジットカード）。読み取れない場合は「不明」",
+    },
   },
-  required: ["date", "store_name", "amount", "is_qualified", "tax_rate"],
+  required: ["date", "store_name", "amount", "is_qualified", "tax_rate", "payment_method"],
   additionalProperties: false,
 };
 
@@ -54,7 +59,7 @@ Deno.serve(async (req) => {
               { type: "image", source: { type: "base64", media_type, data: image_base64 } },
               {
                 type: "text",
-                text: "この日本のレシート画像から、日付・店名・合計金額・適格請求書かどうか・消費税率（8%か10%か）を読み取ってください。",
+                text: "この日本のレシート画像から、日付・店名・合計金額・適格請求書かどうか・消費税率（8%か10%か）・支払い方法を読み取ってください。",
               },
             ],
           },

@@ -69,6 +69,7 @@ document.getElementById('image-input').addEventListener('change', async (e) => {
         radio.checked = radio.value === String(data.tax_rate);
       });
     }
+    if (data.payment_method && data.payment_method !== '不明') document.getElementById('payment-method').value = data.payment_method;
   } catch (err) {
     alert('自動読み取りに失敗しました。手入力してください: ' + err.message);
   } finally {
@@ -107,6 +108,7 @@ document.getElementById('receipt-form').addEventListener('submit', async (e) => 
       is_qualified: document.querySelector('input[name="is_qualified"]:checked').value === 'true',
       tax_rate: parseInt(document.querySelector('input[name="tax_rate"]:checked').value),
       category: document.getElementById('category').value || null,
+      payment_method: document.getElementById('payment-method').value || null,
       memo: document.getElementById('memo').value || null,
       image_path: imagePath,
     });
@@ -180,7 +182,7 @@ document.getElementById('search-input').addEventListener('input', loadReceipts);
 document.getElementById('export-csv-btn').addEventListener('click', () => {
   if (!allReceipts.length) { alert('エクスポートするレシートがありません'); return; }
 
-  const headers = ['日付', '店名・取引先', '金額', '適格請求書', '消費税率', '勘定科目', 'メモ', '画像リンク'];
+  const headers = ['日付', '店名・取引先', '金額', '適格請求書', '消費税率', '勘定科目', '取引手段', '摘要', '画像リンク'];
   const baseUrl = `${window.location.origin}${window.location.pathname}`;
 
   const rows = allReceipts.map(r => [
@@ -190,6 +192,7 @@ document.getElementById('export-csv-btn').addEventListener('click', () => {
     r.is_qualified ? '適格' : '非適格',
     r.tax_rate != null ? `${r.tax_rate}%` : '',
     r.category || '',
+    r.payment_method || '',
     r.memo || '',
     r.image_path ? `${baseUrl}?receipt=${r.id}` : '',
   ]);
@@ -224,6 +227,7 @@ async function openReceipt(id) {
   document.getElementById('modal-store').value = r.store_name || '';
   document.getElementById('modal-amount').value = r.amount ?? '';
   document.getElementById('modal-category').value = r.category || '';
+  document.getElementById('modal-payment-method').value = r.payment_method || '';
   document.getElementById('modal-memo').value = r.memo || '';
   document.querySelectorAll('input[name="modal_qualified"]').forEach(radio => {
     radio.checked = radio.value === String(r.is_qualified);
@@ -271,6 +275,7 @@ document.getElementById('modal-form').addEventListener('submit', async (e) => {
       is_qualified: document.querySelector('input[name="modal_qualified"]:checked').value === 'true',
       tax_rate: document.querySelector('input[name="modal_tax_rate"]:checked') ? parseInt(document.querySelector('input[name="modal_tax_rate"]:checked').value) : null,
       category: document.getElementById('modal-category').value || null,
+      payment_method: document.getElementById('modal-payment-method').value || null,
       memo: document.getElementById('modal-memo').value || null,
     }).eq('id', currentReceiptId);
     if (error) throw error;
