@@ -201,6 +201,11 @@ header .logo {
   width: 100%;
 }
 
+.form-group input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
 .form-group input:focus,
 .form-group select:focus {
   border-color: var(--primary);
@@ -208,7 +213,8 @@ header .logo {
 
 .radio-group {
   display: flex;
-  gap: 20px;
+  flex-wrap: wrap;
+  gap: 12px 20px;
 }
 
 .radio-label {
@@ -217,6 +223,14 @@ header .logo {
   gap: 6px;
   font-size: 15px;
   cursor: pointer;
+  white-space: nowrap;
+}
+
+.radio-label input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin: 0;
 }
 
 /* Buttons */
@@ -386,6 +400,26 @@ header .logo {
   border-radius: 8px;
   border: 1px solid var(--border);
   flex-shrink: 0;
+  cursor: pointer;
+}
+
+.image-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.85);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  cursor: zoom-out;
+}
+
+.image-lightbox img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
 }
 
 .receipt-row-remove { margin-left: auto; }

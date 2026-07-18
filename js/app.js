@@ -109,7 +109,7 @@ function renderAddRowHtml(item) {
     <div class="receipt-row" data-add-id="${item.id}">
       <div class="receipt-row-header">
         <input type="checkbox" class="receipt-row-select" data-action="select" ${item.selected ? 'checked' : ''}>
-        <img class="receipt-row-thumb" src="${item.previewUrl}" alt="レシート画像">
+        <img class="receipt-row-thumb" src="${item.previewUrl}" alt="レシート画像" data-action="preview">
         <span class="badge ${badge.cls}">${badge.label}</span>
         <button type="button" class="btn-danger receipt-row-remove" data-action="remove">除外</button>
       </div>
@@ -225,8 +225,23 @@ document.getElementById('add-list').addEventListener('click', (e) => {
     const item = addItems.find(it => it.id === id);
     if (item) item.selected = e.target.checked;
     updateAddToolbar();
+  } else if (e.target.dataset.action === 'preview') {
+    const item = addItems.find(it => it.id === id);
+    if (item) openImageLightbox(item.previewUrl);
   }
 });
+
+function openImageLightbox(url) {
+  document.getElementById('lightbox-image').src = url;
+  document.getElementById('image-lightbox').classList.remove('hidden');
+}
+
+function closeImageLightbox() {
+  document.getElementById('image-lightbox').classList.add('hidden');
+  document.getElementById('lightbox-image').src = '';
+}
+
+document.getElementById('image-lightbox').addEventListener('click', closeImageLightbox);
 
 function handleAddFieldInput(e) {
   const field = e.target.dataset.field;
