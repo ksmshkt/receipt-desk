@@ -18,9 +18,8 @@ const OUTPUT_SCHEMA = {
       description: "消費税率。10（標準税率）または8（軽減税率、飲食料品のテイクアウト・持ち帰りなど）。判別できない場合はnull",
     },
     payment_method: {
-      type: "string",
-      enum: ["現金", "クレジットカード", "電子マネー・QRコード決済", "銀行振込", "不明"],
-      description: "支払い方法。レシートに記載があれば読み取る（例：「○○Pay支払」→電子マネー・QRコード決済、カード会社名の記載→クレジットカード）。読み取れない場合は「不明」",
+      type: ["string", "null"],
+      description: "支払い方法。レシートに記載されている文字列をそのまま読み取る（例：「現金」「VISA」「PayPay支払」など）。読み取れない場合はnull",
     },
   },
   required: ["date", "store_name", "amount", "is_qualified", "tax_rate", "payment_method"],

@@ -167,12 +167,6 @@ header .logo {
   margin-bottom: 8px;
 }
 
-#image-preview {
-  width: 100%;
-  max-height: 280px;
-  object-fit: contain;
-}
-
 /* Forms */
 .receipt-form {
   background: var(--surface);
@@ -323,6 +317,88 @@ header .logo {
 
 .badge-qualified { background: #dcfce7; color: #16a34a; }
 .badge-unqualified { background: #f3f4f6; color: #9ca3af; }
+.badge-pending { background: #f3f4f6; color: #9ca3af; }
+.badge-running { background: #dbeafe; color: #2563eb; }
+.badge-done { background: #dcfce7; color: #16a34a; }
+.badge-error { background: #fee2e2; color: #dc2626; }
+
+/* Add flow: toolbar + editable rows */
+.add-toolbar {
+  position: sticky;
+  top: 60px; /* header height */
+  z-index: 5;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  margin: 0 -16px 12px;
+}
+
+.add-toolbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.add-toolbar #add-ocr-btn,
+.add-toolbar #add-save-btn {
+  width: auto;
+  padding: 10px 16px;
+  white-space: nowrap;
+  margin: 0;
+}
+
+#add-count-label {
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.receipt-row {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 12px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.receipt-row-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.receipt-row-select {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.receipt-row-thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.receipt-row-remove { margin-left: auto; }
+
+.receipt-row-detail-toggle { width: 100%; text-align: left; }
+
+.receipt-row-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
 
 /* Modal */
 .modal-overlay {

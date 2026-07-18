@@ -21,80 +21,22 @@
   <!-- 追加タブ -->
   <section id="tab-add" class="tab-content">
     <div class="upload-area" id="image-upload-area">
-      <input type="file" id="image-input" accept="image/*" capture="environment">
+      <input type="file" id="image-input" accept="image/*" multiple>
       <div class="upload-placeholder" id="upload-placeholder">
         <span class="upload-icon">📷</span>
-        <p>タップして撮影 / 写真を選択</p>
+        <p>タップして撮影 / 写真を選択（複数選択可）</p>
       </div>
-      <img id="image-preview" class="hidden" alt="プレビュー">
     </div>
 
-    <form id="receipt-form" class="receipt-form">
-      <div class="form-group">
-        <label>日付</label>
-        <input type="date" id="receipt-date" required>
+    <div id="add-toolbar" class="add-toolbar hidden">
+      <div class="add-toolbar-row">
+        <span id="add-count-label"></span>
+        <button type="button" id="add-ocr-btn" class="btn-primary">OCR開始</button>
+        <button type="button" id="add-save-btn" class="btn-primary hidden">保存</button>
       </div>
-      <div class="form-group">
-        <label>店名・取引先</label>
-        <input type="text" id="store-name" placeholder="例：スターバックス">
-      </div>
-      <div class="form-group">
-        <label>金額（円）</label>
-        <input type="number" id="amount" placeholder="例：1500" min="0">
-      </div>
-      <div class="form-group">
-        <label>適格請求書（インボイス）</label>
-        <div class="radio-group">
-          <label class="radio-label">
-            <input type="radio" name="is_qualified" value="true" checked> 適格
-          </label>
-          <label class="radio-label">
-            <input type="radio" name="is_qualified" value="false"> 非適格
-          </label>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>消費税率</label>
-        <div class="radio-group">
-          <label class="radio-label">
-            <input type="radio" name="tax_rate" value="10" checked> 10%
-          </label>
-          <label class="radio-label">
-            <input type="radio" name="tax_rate" value="8"> 8%（軽減税率）
-          </label>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>勘定科目</label>
-        <select id="category">
-          <option value="">未選択</option>
-          <option value="会議費">会議費</option>
-          <option value="交通費">交通費</option>
-          <option value="消耗品費">消耗品費</option>
-          <option value="通信費">通信費</option>
-          <option value="接待交際費">接待交際費</option>
-          <option value="研修費">研修費</option>
-          <option value="広告宣伝費">広告宣伝費</option>
-          <option value="その他">その他</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>取引手段</label>
-        <select id="payment-method">
-          <option value="">未選択</option>
-          <option value="現金">現金</option>
-          <option value="クレジットカード">クレジットカード</option>
-          <option value="電子マネー・QRコード決済">電子マネー・QRコード決済</option>
-          <option value="銀行振込">銀行振込</option>
-          <option value="その他">その他</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>摘要</label>
-        <input type="text" id="memo" placeholder="任意">
-      </div>
-      <button type="submit" class="btn-primary">保存する</button>
-    </form>
+    </div>
+
+    <div id="add-list"></div>
   </section>
 
   <!-- 一覧タブ -->
@@ -173,14 +115,7 @@
         </div>
         <div class="form-group">
           <label>取引手段</label>
-          <select id="modal-payment-method">
-            <option value="">未選択</option>
-            <option value="現金">現金</option>
-            <option value="クレジットカード">クレジットカード</option>
-            <option value="電子マネー・QRコード決済">電子マネー・QRコード決済</option>
-            <option value="銀行振込">銀行振込</option>
-            <option value="その他">その他</option>
-          </select>
+          <input type="text" id="modal-payment-method" placeholder="例：現金、事業用カード">
         </div>
         <div class="form-group">
           <label>摘要</label>
