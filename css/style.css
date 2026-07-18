@@ -1,23 +1,24 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --bg: #f1f5f9;
-  --surface: #ffffff;
-  --text: #1e293b;
-  --text-muted: #64748b;
-  --border: #e2e8f0;
-  --danger: #ef4444;
-  --radius: 12px;
-  --shadow: 0 1px 3px rgba(0,0,0,.1);
+  --primary: #a85a1c;
+  --primary-hover: #8a4a16;
+  --bg: #eaeaea;
+  --surface: #fbfaf7;
+  --text: #262220;
+  --text-muted: #85817a;
+  --border: #dcd8d0;
+  --danger: #a8453c;
+  --radius: 8px;
+  --shadow: 0 1px 2px rgba(38,34,32,.06);
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100dvh;
+  accent-color: var(--text);
 }
 
 /* Auth */
@@ -40,17 +41,18 @@ body {
 
 .logo {
   font-size: 22px;
-  font-weight: 700;
-  color: var(--primary);
-  display: block;
-  text-align: center;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 28px;
 }
 
-.tagline {
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 14px;
-  margin: 4px 0 24px;
+.logo-icon {
+  flex-shrink: 0;
 }
 
 .auth-tabs {
@@ -72,9 +74,9 @@ body {
 }
 
 .auth-tab.active {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
-  font-weight: 600;
+  color: var(--text);
+  border-bottom-color: var(--text);
+  font-weight: 700;
 }
 
 #auth-form {
@@ -98,7 +100,7 @@ header {
 
 header .logo {
   font-size: 18px;
-  text-align: left;
+  justify-content: flex-start;
 }
 
 /* Tabs */
@@ -120,9 +122,9 @@ header .logo {
 }
 
 .tab.active {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
-  font-weight: 600;
+  color: var(--text);
+  border-bottom-color: var(--text);
+  font-weight: 700;
 }
 
 /* Tab content */
@@ -134,9 +136,6 @@ header .logo {
 
 /* Upload area */
 .upload-area {
-  background: var(--surface);
-  border: 2px dashed var(--border);
-  border-radius: var(--radius);
   margin-bottom: 16px;
   overflow: hidden;
   position: relative;
@@ -157,7 +156,8 @@ header .logo {
 
 .upload-placeholder {
   text-align: center;
-  color: var(--text-muted);
+  color: var(--text);
+  font-weight: 700;
   pointer-events: none;
 }
 
@@ -235,19 +235,19 @@ header .logo {
 
 /* Buttons */
 .btn-primary {
-  background: var(--primary);
-  color: white;
+  background: none;
+  color: var(--text);
   border: none;
   border-radius: 8px;
   padding: 12px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   width: 100%;
 }
 
-.btn-primary:hover { background: var(--primary-hover); }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-primary:hover { background: rgba(38,34,32,.06); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .btn-ghost {
   background: none;
