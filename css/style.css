@@ -76,7 +76,7 @@ body {
 .auth-tab.active {
   color: var(--text);
   border-bottom-color: var(--text);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 #auth-form {
@@ -124,7 +124,7 @@ header .logo {
 .tab.active {
   color: var(--text);
   border-bottom-color: var(--text);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 /* Tab content */
@@ -156,15 +156,18 @@ header .logo {
 
 .upload-placeholder {
   text-align: center;
-  color: var(--text);
-  font-weight: 700;
   pointer-events: none;
 }
 
 .upload-icon {
-  font-size: 36px;
+  font-size: 48px;
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+}
+
+.upload-hint {
+  font-size: 12px;
+  color: var(--text-muted);
 }
 
 /* Forms */
@@ -329,7 +332,7 @@ header .logo {
 
 .receipt-card-store {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .receipt-card-category {
