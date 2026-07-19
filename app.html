@@ -53,6 +53,18 @@
   <section id="tab-list" class="tab-content hidden">
     <div class="search-bar">
       <input type="search" id="search-input" placeholder="店名・メモで検索">
+    </div>
+    <div class="csv-bar">
+      <select id="csv-range-select">
+        <option value="all">すべての期間</option>
+        <option value="month">今月</option>
+        <option value="quarter">今四半期</option>
+        <option value="year">今年</option>
+        <option value="custom">期間を指定</option>
+      </select>
+      <input type="date" id="csv-range-start" class="hidden">
+      <span id="csv-range-tilde" class="hidden">〜</span>
+      <input type="date" id="csv-range-end" class="hidden">
       <button id="export-csv-btn" class="btn-ghost">⬇ CSV</button>
     </div>
     <div id="receipt-list"></div>

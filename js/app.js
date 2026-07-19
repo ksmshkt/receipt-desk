@@ -317,14 +317,6 @@ async function saveAllReceipts() {
   const selectedItems = addItems.filter(it => it.selected);
   if (addBusy || !selectedItems.length) return;
 
-  const missingDateIndexes = selectedItems
-    .map((it, i) => (it.fields.date ? null : i + 1))
-    .filter(i => i !== null);
-  if (missingDateIndexes.length) {
-    alert(`日付が未入力のレシートがあります（選択した${missingDateIndexes.join('、')}件目）。日付を入力してから保存してください。`);
-    return;
-  }
-
   addBusy = true;
   document.getElementById('add-save-btn').disabled = true;
   document.getElementById('add-ocr-btn').disabled = true;
@@ -435,14 +427,66 @@ function renderReceipts(receipts) {
 
 document.getElementById('search-input').addEventListener('input', loadReceipts);
 
+// CSV date range picker
+document.getElementById('csv-range-select').addEventListener('change', (e) => {
+  const isCustom = e.target.value === 'custom';
+  document.getElementById('csv-range-start').classList.toggle('hidden', !isCustom);
+  document.getElementById('csv-range-tilde').classList.toggle('hidden', !isCustom);
+  document.getElementById('csv-range-end').classList.toggle('hidden', !isCustom);
+});
+
+function getCsvDateRange() {
+  const mode = document.getElementById('csv-range-select').value;
+  if (mode === 'all') return null;
+
+  const pad = (n) => String(n).padStart(2, '0');
+  const fmt = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const now = new Date();
+
+  if (mode === 'month') {
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    return { start: fmt(start), end: fmt(end) };
+  }
+  if (mode === 'quarter') {
+    const qStartMonth = Math.floor(now.getMonth() / 3) * 3;
+    const start = new Date(now.getFullYear(), qStartMonth, 1);
+    const end = new Date(now.getFullYear(), qStartMonth + 3, 0);
+    return { start: fmt(start), end: fmt(end) };
+  }
+  if (mode === 'year') {
+    return { start: `${now.getFullYear()}-01-01`, end: `${now.getFullYear()}-12-31` };
+  }
+  // custom
+  return {
+    start: document.getElementById('csv-range-start').value || null,
+    end: document.getElementById('csv-range-end').value || null,
+  };
+}
+
 // Export CSV
 document.getElementById('export-csv-btn').addEventListener('click', () => {
   if (!allReceipts.length) { alert('エクスポートするレシートがありません'); return; }
 
+  // Rows missing a date aren't usable for bookkeeping exports, so leave them out
+  // (they still show up in the list itself — this only affects the CSV).
+  const withDate = allReceipts.filter(r => r.date);
+  const skipped = allReceipts.length - withDate.length;
+
+  const range = getCsvDateRange();
+  const exportable = range
+    ? withDate.filter(r => (!range.start || r.date >= range.start) && (!range.end || r.date <= range.end))
+    : withDate;
+
+  if (!exportable.length) {
+    alert('条件に一致するレシートがありません');
+    return;
+  }
+
   const headers = ['日付', '店名・取引先', '金額', '適格請求書', '消費税率', '勘定科目', '取引手段', '摘要', '画像リンク'];
   const baseUrl = `${window.location.origin}${window.location.pathname}`;
 
-  const rows = allReceipts.map(r => [
+  const rows = exportable.map(r => [
     r.date || '',
     r.store_name || '',
     r.amount != null ? r.amount : '',
@@ -462,6 +506,10 @@ document.getElementById('export-csv-btn').addEventListener('click', () => {
   a.download = `receipts_${today()}.csv`;
   a.click();
   URL.revokeObjectURL(url);
+
+  if (skipped) {
+    alert(`日付未入力の${skipped}件を除いてCSVを出力しました。`);
+  }
 });
 
 function escapeCsvField(field) {

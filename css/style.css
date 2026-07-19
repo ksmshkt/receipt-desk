@@ -282,6 +282,30 @@ header .logo {
 
 .search-bar input:focus { border-color: var(--primary); }
 
+.csv-bar {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.csv-bar select,
+.csv-bar input[type="date"] {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  background: var(--surface);
+  outline: none;
+  color: var(--text);
+}
+
+.csv-bar select:focus,
+.csv-bar input[type="date"]:focus { border-color: var(--primary); }
+
+.csv-bar #export-csv-btn { margin-left: auto; }
+
 /* Receipt cards */
 .receipt-card {
   background: var(--surface);
