@@ -396,6 +396,43 @@ header .logo {
   color: var(--text-muted);
 }
 
+.bulk-apply-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.bulk-apply-row select,
+.bulk-apply-row input[type="text"] {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  background: var(--surface);
+  outline: none;
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
+}
+
+.bulk-apply-row select:focus,
+.bulk-apply-row input[type="text"]:focus { border-color: var(--primary); }
+
+.bulk-apply-row #bulk-apply-field {
+  flex: 0 1 145px;
+}
+
+.bulk-apply-row #bulk-apply-btn {
+  width: auto;
+  white-space: nowrap;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
 .receipt-row {
   background: var(--surface);
   border-radius: var(--radius);

@@ -184,10 +184,12 @@ function updateAddRowBadge(id) {
 function updateAddToolbar() {
   const toolbar = document.getElementById('add-toolbar');
   const saveBtn = document.getElementById('add-save-btn');
+  const bulkRow = document.getElementById('bulk-apply-row');
 
   if (!addItems.length) {
     toolbar.classList.add('hidden');
     saveBtn.classList.add('hidden');
+    bulkRow.classList.add('hidden');
     return;
   }
 
@@ -197,6 +199,7 @@ function updateAddToolbar() {
   saveBtn.classList.remove('hidden');
   document.getElementById('add-count-label').textContent = `${selectedCount}件選択中`;
   saveBtn.disabled = selectedCount === 0;
+  bulkRow.classList.toggle('hidden', selectedCount < 2);
 }
 
 function removeAddItem(id) {
@@ -229,6 +232,65 @@ document.getElementById('add-list').addEventListener('click', (e) => {
     const item = addItems.find(it => it.id === id);
     if (item) openImageLightbox(item.previewUrl);
   }
+});
+
+// Bulk apply: pick one field, set its value (blank included), apply to every
+// currently-selected row. Only the chosen field is touched — unlike a single
+// multi-field form, there's no ambiguity between "left blank" and "not touched",
+// since choosing the field IS the opt-in signal.
+// Kept as its own function (rather than inlined in the click handler) so a future
+// rule-matching feature can call the same entry point instead of duplicating this logic.
+document.getElementById('bulk-apply-value-select').innerHTML = buildSelectOptions(CATEGORY_OPTIONS, '');
+
+function applyFieldsToItems(ids, fields) {
+  ids.forEach(id => {
+    const item = addItems.find(it => it.id === id);
+    if (!item) return;
+    Object.keys(fields).forEach(key => { item.fields[key] = fields[key]; });
+    renderAddRow(id);
+  });
+}
+
+document.getElementById('bulk-apply-field').addEventListener('change', (e) => {
+  const field = e.target.value;
+  const valueSelect = document.getElementById('bulk-apply-value-select');
+  const valueText = document.getElementById('bulk-apply-value-text');
+  const applyBtn = document.getElementById('bulk-apply-btn');
+
+  valueSelect.value = '';
+  valueText.value = '';
+
+  if (!field) {
+    valueSelect.classList.add('hidden');
+    valueText.classList.add('hidden');
+    applyBtn.classList.add('hidden');
+  } else if (field === 'category') {
+    valueSelect.classList.remove('hidden');
+    valueText.classList.add('hidden');
+    applyBtn.classList.remove('hidden');
+  } else {
+    valueSelect.classList.add('hidden');
+    valueText.classList.remove('hidden');
+    applyBtn.classList.remove('hidden');
+  }
+});
+
+document.getElementById('bulk-apply-btn').addEventListener('click', () => {
+  const field = document.getElementById('bulk-apply-field').value;
+  if (!field) return;
+
+  const value = field === 'category'
+    ? document.getElementById('bulk-apply-value-select').value
+    : document.getElementById('bulk-apply-value-text').value;
+
+  const selectedIds = addItems.filter(it => it.selected).map(it => it.id);
+  if (!selectedIds.length) return;
+  applyFieldsToItems(selectedIds, { [field]: value });
+
+  // Reset the picker for the next field, but leave row selection (checkboxes) untouched
+  // so multiple fields can be applied to the same batch in sequence.
+  document.getElementById('bulk-apply-field').value = '';
+  document.getElementById('bulk-apply-field').dispatchEvent(new Event('change'));
 });
 
 function openImageLightbox(url) {

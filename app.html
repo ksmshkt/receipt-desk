@@ -44,6 +44,18 @@
         <button type="button" id="add-ocr-btn" class="btn-primary">OCR開始</button>
         <button type="button" id="add-save-btn" class="btn-primary hidden">保存</button>
       </div>
+      <div id="bulk-apply-row" class="bulk-apply-row hidden">
+        <select id="bulk-apply-field">
+          <option value="">一括設定 ▼</option>
+          <option value="store_name">店名・取引先</option>
+          <option value="category">勘定科目</option>
+          <option value="payment_method">取引手段</option>
+          <option value="memo">摘要</option>
+        </select>
+        <select id="bulk-apply-value-select" class="hidden"></select>
+        <input type="text" id="bulk-apply-value-text" class="hidden" placeholder="値を入力（空欄で反映も可）">
+        <button type="button" id="bulk-apply-btn" class="btn-ghost hidden">反映</button>
+      </div>
     </div>
 
     <div id="add-list"></div>
