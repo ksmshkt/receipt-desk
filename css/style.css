@@ -39,6 +39,17 @@ body {
   box-shadow: var(--shadow);
 }
 
+.privacy-notice {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin-top: 20px;
+}
+
+.privacy-notice a {
+  color: var(--text);
+}
+
 .logo {
   font-size: 22px;
   font-weight: 800;
