@@ -1,7 +1,32 @@
+import { createClient } from "jsr:@supabase/supabase-js@2";
+
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+// Plan name -> monthly OCR cap (null = unlimited). Add a key here and flip a
+// user's receipt_desk_profiles.plan via SQL to introduce new tiers — no schema change needed.
+const PLAN_LIMITS: Record<string, number | null> = {
+  free: 30,
+  admin: null,
+  // future example: paid_100: 100, paid_300: 300,
+};
+const DEFAULT_PLAN = "free";
+
+// Edge Functions run in UTC, but the free-tier reset should follow Japan's
+// calendar month, not the server's — otherwise the reset lags by up to 9
+// hours after midnight JST on the 1st.
+function currentMonthKey() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+  }).formatToParts(new Date());
+  const year = parts.find((p) => p.type === "year")!.value;
+  const month = parts.find((p) => p.type === "month")!.value;
+  return `${year}-${month}`;
+}
 
 const OUTPUT_SCHEMA = {
   type: "object",
@@ -42,6 +67,40 @@ Deno.serve(async (req) => {
         status: 400,
         headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
       });
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const userClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
+      global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } },
+    });
+    const { data: { user }, error: userError } = await userClient.auth.getUser();
+    if (userError || !user) {
+      return new Response(JSON.stringify({ error: "unauthorized" }), {
+        status: 401,
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+      });
+    }
+
+    const adminClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const { data: existingProfile } = await adminClient
+      .from("receipt_desk_profiles")
+      .select("plan, ocr_month, ocr_count")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    const currentMonth = currentMonthKey();
+    const profile = existingProfile ?? { plan: DEFAULT_PLAN, ocr_month: null, ocr_count: 0 };
+    const currentCount = profile.ocr_month === currentMonth ? profile.ocr_count : 0;
+    // Note: can't use `PLAN_LIMITS[plan] ?? fallback` here — admin's limit is
+    // legitimately `null` (unlimited), and `??` treats null as "missing" too,
+    // which would wrongly fall back to the free tier's cap.
+    const limit = profile.plan in PLAN_LIMITS ? PLAN_LIMITS[profile.plan] : PLAN_LIMITS[DEFAULT_PLAN];
+
+    if (limit !== null && currentCount >= limit) {
+      return new Response(
+        JSON.stringify({ error: `今月のOCR利用上限（${limit}件）に達しました。来月になるとリセットされます。` }),
+        { status: 429, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
+      );
     }
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -86,6 +145,15 @@ Deno.serve(async (req) => {
         headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
       });
     }
+
+    // Record usage regardless of plan (useful for cost visibility even for
+    // admin/paid) — the enforced cap above already handled who gets blocked.
+    // Preserve the existing plan value here so admin/paid never gets reset
+    // back to the 'free' column default on upsert.
+    await adminClient.from("receipt_desk_profiles").upsert(
+      { user_id: user.id, plan: profile.plan, ocr_month: currentMonth, ocr_count: currentCount + 1 },
+      { onConflict: "user_id" },
+    );
 
     return new Response(textBlock.text, {
       headers: { ...CORS_HEADERS, "Content-Type": "application/json" },

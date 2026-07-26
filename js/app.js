@@ -6,6 +6,20 @@ let addBusy = false;
 
 const CATEGORY_OPTIONS = ['会議費', '交通費', '消耗品費', '通信費', '接待交際費', '研修費', '広告宣伝費', 'その他'];
 
+// supabase-js only gives a generic message for non-2xx Edge Function responses
+// (e.g. "Edge Function returned a non-2xx status code") — the actual
+// { error: "..." } body we send back (like the OCR quota message) has to be
+// read separately off err.context.
+async function extractFunctionErrorMessage(err) {
+  if (err?.context?.json) {
+    try {
+      const body = await err.context.json();
+      if (body?.error) return body.error;
+    } catch {}
+  }
+  return err.message || String(err);
+}
+
 async function init() {
   const { data: { session } } = await client.auth.getSession();
   if (!session) { window.location.href = 'index.html'; return; }
@@ -38,6 +52,24 @@ document.querySelectorAll('.tab').forEach(tab => {
 document.getElementById('logout-btn').addEventListener('click', async () => {
   await client.auth.signOut();
   window.location.href = 'index.html';
+});
+
+// Delete account (irreversible — double confirm)
+document.getElementById('delete-account-btn').addEventListener('click', async () => {
+  if (!confirm('アカウントを削除すると、保存した全レシート・画像が完全に削除され元に戻せません。続けますか？')) return;
+  if (!confirm('本当によろしいですか？この操作は取り消せません。')) return;
+
+  showLoading(true);
+  try {
+    const { error } = await client.functions.invoke('delete-account');
+    if (error) throw error;
+    await client.auth.signOut();
+    window.location.href = 'index.html';
+  } catch (err) {
+    alert('退会処理に失敗しました: ' + (await extractFunctionErrorMessage(err)));
+  } finally {
+    showLoading(false);
+  }
 });
 
 function blobToBase64(blob) {
@@ -364,7 +396,7 @@ async function runOcrForPendingItems() {
       item.ocrStatus = 'done';
     } catch (err) {
       item.ocrStatus = 'error';
-      item.ocrError = err.message || String(err);
+      item.ocrError = await extractFunctionErrorMessage(err);
       // fields stay at their current values — editable and savable regardless
     }
     renderAddRow(item.id);

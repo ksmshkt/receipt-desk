@@ -103,6 +103,12 @@ header .logo {
   justify-content: flex-start;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 /* Tabs */
 .tabs {
   display: flex;
