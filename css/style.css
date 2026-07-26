@@ -307,7 +307,12 @@ header .logo {
 .csv-bar select:focus,
 .csv-bar input[type="date"]:focus { border-color: var(--primary); }
 
-.csv-bar #export-csv-btn { margin-left: auto; }
+.csv-bar #export-images-btn { margin-left: auto; }
+
+#image-export-progress {
+  font-size: 13px;
+  color: var(--text-muted);
+}
 
 /* Receipt cards */
 .receipt-card {

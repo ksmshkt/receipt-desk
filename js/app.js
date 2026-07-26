@@ -52,6 +52,10 @@ function escapeHtmlAttr(str) {
   return String(str ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+function sanitizeFilename(str) {
+  return (str || '').replace(/[\\/:*?"<>|]/g, '_').trim();
+}
+
 function buildSelectOptions(options, selectedValue) {
   return '<option value="">未選択</option>' + options.map(opt =>
     `<option value="${escapeHtmlAttr(opt)}" ${opt === selectedValue ? 'selected' : ''}>${escapeHtmlAttr(opt)}</option>`
@@ -526,6 +530,57 @@ function getCsvDateRange() {
   };
 }
 
+// Bulk image download (ZIP) — unlike CSV, date-less receipts (image-only
+// archival) are included when no specific range is selected, since that's
+// exactly the case this feature exists for.
+function getImageExportList() {
+  const range = getCsvDateRange();
+  if (!range) return allReceipts.filter(r => r.image_path);
+  return allReceipts.filter(r =>
+    r.image_path && r.date && (!range.start || r.date >= range.start) && (!range.end || r.date <= range.end)
+  );
+}
+
+document.getElementById('export-images-btn').addEventListener('click', async () => {
+  const exportable = getImageExportList();
+  if (!exportable.length) { alert('ダウンロードする画像がありません'); return; }
+
+  const btn = document.getElementById('export-images-btn');
+  const progress = document.getElementById('image-export-progress');
+  btn.disabled = true;
+  progress.classList.remove('hidden');
+
+  const zip = new JSZip();
+  let skipped = 0;
+
+  for (let i = 0; i < exportable.length; i++) {
+    const r = exportable[i];
+    progress.textContent = `${i + 1}/${exportable.length}件 取得中...`;
+
+    const { data: blob, error } = await client.storage.from('receipts').download(r.image_path);
+    if (error || !blob) { skipped++; continue; }
+
+    const ext = r.image_path.split('.').pop() || 'jpg';
+    const label = sanitizeFilename(`${r.date || '日付なし'}_${r.store_name || '店名なし'}_${r.id.slice(0, 8)}`);
+    zip.file(`${label}.${ext}`, blob);
+  }
+
+  progress.textContent = 'ZIPを作成中...';
+  const zipBlob = await zip.generateAsync({ type: 'blob' });
+
+  const url = URL.createObjectURL(zipBlob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `receipt_images_${today()}.zip`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  progress.classList.add('hidden');
+  btn.disabled = false;
+
+  if (skipped) alert(`${skipped}件の画像取得に失敗したためZIPから除外しました。`);
+});
+
 // Export CSV
 document.getElementById('export-csv-btn').addEventListener('click', () => {
   if (!allReceipts.length) { alert('エクスポートするレシートがありません'); return; }
@@ -681,11 +736,14 @@ document.getElementById('delete-btn').addEventListener('click', async () => {
 document.getElementById('download-btn').addEventListener('click', async () => {
   if (!currentImagePath) { alert('画像がありません'); return; }
 
-  const { data } = await client.storage.from('receipts').createSignedUrl(currentImagePath, 60);
+  // The signed URL is cross-origin (supabase.co), so the `download` attribute
+  // on <a> is ignored by the browser — passing { download: true } makes
+  // Supabase itself send Content-Disposition: attachment, which works cross-origin.
+  const { data } = await client.storage.from('receipts')
+    .createSignedUrl(currentImagePath, 60, { download: `receipt_${currentReceiptId}.jpg` });
   if (data) {
     const a = document.createElement('a');
     a.href = data.signedUrl;
-    a.download = `receipt_${currentReceiptId}.jpg`;
     a.click();
   }
 });
