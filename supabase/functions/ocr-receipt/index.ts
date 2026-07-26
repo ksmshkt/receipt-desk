@@ -7,7 +7,11 @@ const OUTPUT_SCHEMA = {
   type: "object",
   properties: {
     date: { type: ["string", "null"], description: "レシートの日付。YYYY-MM-DD形式。読み取れない場合はnull" },
-    store_name: { type: ["string", "null"], description: "店名・取引先名。読み取れない場合はnull" },
+    store_name: {
+      type: ["string", "null"],
+      description:
+        "店名・取引先名。最優先はレシートに文字で印字されている正式な店名（チェーン名と支店名が別々に印字されている場合は両方含める。例：「サンマルクカフェ 渋谷店」）。文字による店名の印字がない、またはロゴ・マークのみで判別しづらい場合に限り、ロゴのデザインからブランドを推測してよい。印字文字とロゴ推測が食い違う場合は印字文字を優先する。それでも読み取れない場合はnull",
+    },
     amount: { type: ["integer", "null"], description: "合計金額（円、税込）。読み取れない場合はnull" },
     is_qualified: {
       type: "boolean",
