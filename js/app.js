@@ -20,11 +20,46 @@ async function extractFunctionErrorMessage(err) {
   return err.message || String(err);
 }
 
+// Mirrors ocr-receipt/index.ts's PLAN_LIMITS for display purposes. Deno (Edge
+// Function) and the browser can't share a module here, so this small table is
+// intentionally duplicated — add a plan to both places when introducing one.
+const PLAN_LABELS = { free: '無料プラン', admin: '管理者プラン' };
+const PLAN_LIMITS_DISPLAY = { free: 30, admin: null };
+
+// Mirrors ocr-receipt/index.ts's currentMonthKey() (same JST-vs-UTC reasoning).
+function currentMonthKeyJST() {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit',
+  }).formatToParts(new Date());
+  const year = parts.find(p => p.type === 'year').value;
+  const month = parts.find(p => p.type === 'month').value;
+  return `${year}-${month}`;
+}
+
+async function loadAccountUsage() {
+  const { data: { user } } = await client.auth.getUser();
+  const { data: profile } = await client
+    .from('receipt_desk_profiles')
+    .select('plan, ocr_month, ocr_count')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  const plan = profile?.plan ?? 'free';
+  // `in` (not `??`) so admin's legitimate `null` (unlimited) isn't mistaken for "missing".
+  const limit = plan in PLAN_LIMITS_DISPLAY ? PLAN_LIMITS_DISPLAY[plan] : PLAN_LIMITS_DISPLAY.free;
+  const count = profile?.ocr_month === currentMonthKeyJST() ? profile.ocr_count : 0;
+
+  document.getElementById('account-plan-label').textContent = PLAN_LABELS[plan] ?? plan;
+  document.getElementById('account-usage-label').textContent =
+    limit === null ? `OCR利用状況：${count}件（無制限）` : `OCR利用状況：${count} / ${limit}件（今月）`;
+}
+
 async function init() {
   const { data: { session } } = await client.auth.getSession();
   if (!session) { window.location.href = 'index.html'; return; }
 
   await loadReceipts();
+  await loadAccountUsage();
 
   const receiptId = new URLSearchParams(window.location.search).get('receipt');
   if (receiptId) {
@@ -46,6 +81,18 @@ document.querySelectorAll('.tab').forEach(tab => {
     document.getElementById(`tab-${tab.dataset.tab}`).classList.remove('hidden');
     if (tab.dataset.tab === 'list') loadReceipts();
   });
+});
+
+// Account menu (icon opens a popover with plan/usage info + logout/delete-account)
+document.getElementById('account-btn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  document.getElementById('account-menu').classList.toggle('hidden');
+});
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('account-menu');
+  if (!menu.classList.contains('hidden') && !menu.contains(e.target) && e.target.id !== 'account-btn') {
+    menu.classList.add('hidden');
+  }
 });
 
 // Logout
@@ -406,6 +453,7 @@ async function runOcrForPendingItems() {
   document.getElementById('add-ocr-btn').disabled = false;
   document.getElementById('add-save-btn').disabled = false;
   updateAddToolbar();
+  loadAccountUsage();
 }
 document.getElementById('add-ocr-btn').addEventListener('click', runOcrForPendingItems);
 

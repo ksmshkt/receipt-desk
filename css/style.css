@@ -50,6 +50,13 @@ body {
   color: var(--text);
 }
 
+.plan-info {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin-top: 16px;
+}
+
 .logo {
   font-size: 22px;
   font-weight: 800;
@@ -115,9 +122,50 @@ header .logo {
 }
 
 .header-actions {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+.account-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.account-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 180px;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.account-usage {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.account-usage p {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.account-menu .btn-ghost {
+  text-align: left;
+  padding: 4px 0;
 }
 
 /* Tabs */

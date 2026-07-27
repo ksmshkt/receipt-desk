@@ -21,8 +21,20 @@
       </svg>
     </span>
     <div class="header-actions">
-      <button id="logout-btn" class="btn-ghost">ログアウト</button>
-      <button id="delete-account-btn" class="btn-ghost">退会</button>
+      <button id="account-btn" class="btn-ghost account-btn" aria-label="アカウント">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/>
+        </svg>
+      </button>
+      <div id="account-menu" class="account-menu hidden">
+        <div class="account-usage">
+          <p id="account-plan-label"></p>
+          <p id="account-usage-label"></p>
+        </div>
+        <button id="logout-btn" class="btn-ghost">ログアウト</button>
+        <button id="delete-account-btn" class="btn-ghost">退会</button>
+      </div>
     </div>
   </header>
 

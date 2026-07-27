@@ -10,6 +10,7 @@ document.querySelectorAll('.auth-tab').forEach(tab => {
     tab.classList.add('active');
     isLogin = tab.dataset.tab === 'login';
     document.getElementById('auth-btn').textContent = isLogin ? 'ログイン' : '新規登録';
+    document.getElementById('plan-info').classList.toggle('hidden', isLogin);
     document.getElementById('auth-error').classList.add('hidden');
   });
 });
