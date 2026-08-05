@@ -1,0 +1,280 @@
+/* Landing page only — imports :root vars from style.css (linked alongside this file) */
+
+.lp-header {
+  background: var(--surface);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+
+.lp-header .logo { margin-bottom: 0; }
+
+.lp-header-cta {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.lp-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.lp-hero {
+  text-align: center;
+  padding: 56px 20px 48px;
+}
+
+.lp-hero-eyebrow {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0.02em;
+  margin-bottom: 12px;
+}
+
+.lp-hero h1 {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.lp-hero p {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text-muted);
+  max-width: 480px;
+  margin: 0 auto 28px;
+}
+
+.lp-cta-btn {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 14px 32px;
+  border-radius: var(--radius);
+}
+
+.lp-cta-btn:hover { background: var(--primary-hover); }
+
+.lp-cta-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 12px;
+}
+
+.lp-section {
+  padding: 40px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.lp-section h2 {
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.lp-pain-grid,
+.lp-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.lp-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px 16px;
+}
+
+.lp-card-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--primary);
+  margin-bottom: 10px;
+}
+
+.lp-card h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.lp-card p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.lp-pricing-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px 24px;
+  max-width: 320px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.lp-pricing-card .lp-price-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.lp-pricing-card .lp-price {
+  font-size: 36px;
+  font-weight: 800;
+  margin: 8px 0 4px;
+}
+
+.lp-pricing-card .lp-price-detail {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.lp-pricing-card ul {
+  list-style: none;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.lp-pricing-card li::before {
+  content: '✓ ';
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.lp-pricing-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 16px;
+}
+
+/* Horizontal, swipeable/scrollable carousel — 4 screenshots of varying aspect
+   ratios would make a stacked layout far too tall, so each card gets a fixed-
+   height frame (object-fit: contain) and the row scrolls sideways instead. */
+.lp-screenshot-scroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 4px 14px;
+  margin: 0 -4px;
+  scrollbar-width: thin;
+}
+
+.lp-screenshot-scroll::-webkit-scrollbar { height: 6px; }
+.lp-screenshot-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.lp-screenshot-scroll::-webkit-scrollbar-track { background: transparent; }
+
+.lp-screenshot-card {
+  flex: 0 0 auto;
+  width: min(500px, 86vw);
+  scroll-snap-align: start;
+}
+
+.lp-screenshot-card figure {
+  margin: 0;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.lp-screenshot-card .lp-shot-frame {
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  padding: 12px;
+}
+
+.lp-screenshot-card img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(38,34,32,.12);
+  cursor: zoom-in;
+}
+
+.lp-screenshot-card figcaption {
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
+
+.lp-screenshot-hint {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.lp-trust {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-muted);
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.lp-trust a { color: var(--text); }
+
+.lp-final-cta {
+  text-align: center;
+  padding: 48px 20px 56px;
+  border-top: 1px solid var(--border);
+}
+
+.lp-final-cta p {
+  font-size: 15px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.lp-footer {
+  text-align: center;
+  padding: 24px 20px 40px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.lp-footer a { color: var(--text-muted); }
+
+@media (max-width: 480px) {
+  .lp-hero h1 { font-size: 24px; }
+  .lp-pain-grid,
+  .lp-feature-grid { grid-template-columns: 1fr; }
+}
