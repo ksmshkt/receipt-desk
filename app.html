@@ -93,7 +93,13 @@
       <span id="csv-range-tilde" class="hidden">〜</span>
       <input type="date" id="csv-range-end" class="hidden">
       <button id="export-images-btn" class="btn-ghost">🖼 画像一括DL</button>
-      <button id="export-csv-btn" class="btn-ghost">⬇ CSV</button>
+      <div class="csv-export">
+        <button id="csv-export-toggle" class="btn-ghost">⬇ CSV</button>
+        <div id="csv-export-menu" class="csv-export-menu hidden">
+          <button id="export-csv-btn" class="btn-ghost">汎用形式</button>
+          <button id="export-csv-yayoi-btn" class="btn-ghost">弥生形式（やよいの青色申告 オンライン）</button>
+        </div>
+      </div>
       <span id="image-export-progress" class="hidden"></span>
     </div>
     <div id="receipt-list"></div>
@@ -189,6 +195,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/encoding-japanese@2.0.0/encoding.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/compress.js"></script>
   <script src="js/app.js"></script>

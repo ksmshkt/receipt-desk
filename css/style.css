@@ -374,6 +374,33 @@ header .logo {
 
 .csv-bar #export-images-btn { margin-left: auto; }
 
+.csv-export { position: relative; display: flex; }
+
+.csv-export-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 200px;
+  padding: 8px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.csv-export-menu .btn-ghost {
+  text-align: left;
+  padding: 6px 8px;
+  font-size: 14px;
+  border-radius: 6px;
+}
+
+.csv-export-menu .btn-ghost:hover { background: var(--bg); }
+
 #image-export-progress {
   font-size: 13px;
   color: var(--text-muted);

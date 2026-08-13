@@ -661,12 +661,21 @@ document.getElementById('export-images-btn').addEventListener('click', async () 
   if (skipped) alert(`${skipped}件の画像取得に失敗したためZIPから除外しました。`);
 });
 
-// Export CSV
-document.getElementById('export-csv-btn').addEventListener('click', () => {
-  if (!allReceipts.length) { alert('エクスポートするレシートがありません'); return; }
+// CSV形式選択のアコーディオン（account-menuと同じ開閉パターン：外側クリックで閉じる）
+document.getElementById('csv-export-toggle').addEventListener('click', (e) => {
+  e.stopPropagation();
+  document.getElementById('csv-export-menu').classList.toggle('hidden');
+});
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('csv-export-menu');
+  if (!menu.classList.contains('hidden') && !menu.contains(e.target) && e.target.id !== 'csv-export-toggle') {
+    menu.classList.add('hidden');
+  }
+});
 
-  // Rows missing a date aren't usable for bookkeeping exports, so leave them out
-  // (they still show up in the list itself — this only affects the CSV).
+// Shared by both CSV exports — rows missing a date aren't usable for bookkeeping
+// exports, so leave them out (they still show up in the list itself).
+function getCsvExportList() {
   const withDate = allReceipts.filter(r => r.date);
   const skipped = allReceipts.length - withDate.length;
 
@@ -675,6 +684,15 @@ document.getElementById('export-csv-btn').addEventListener('click', () => {
     ? withDate.filter(r => (!range.start || r.date >= range.start) && (!range.end || r.date <= range.end))
     : withDate;
 
+  return { exportable, skipped };
+}
+
+// Export CSV
+document.getElementById('export-csv-btn').addEventListener('click', () => {
+  document.getElementById('csv-export-menu').classList.add('hidden');
+  if (!allReceipts.length) { alert('エクスポートするレシートがありません'); return; }
+
+  const { exportable, skipped } = getCsvExportList();
   if (!exportable.length) {
     alert('条件に一致するレシートがありません');
     return;
@@ -706,6 +724,60 @@ document.getElementById('export-csv-btn').addEventListener('click', () => {
 
   if (skipped) {
     alert(`日付未入力の${skipped}件を除いてCSVを出力しました。`);
+  }
+});
+
+// Export CSV for やよいの青色申告 オンライン（現金出納帳のCSV取込フォーマット）。
+// 列は 日付,入金,出金,摘要,軽減税率,部門,請求書区分 の固定7列。すべて支出前提
+// なので入金・部門は常に空欄。摘要は店名＋摘要をマージする（弥生側は取引先名を
+// 摘要に含める運用のため）。軽減税率は「非空欄なら対象」という弥生側の仕様に
+// 合わせて8%の時だけ印を入れる。請求書区分は非適格の時だけ「区分記載」を入れる
+// （登録番号のない簡易な領収書＝区分記載請求書、という弥生側の用語に合わせている）。
+document.getElementById('export-csv-yayoi-btn').addEventListener('click', () => {
+  document.getElementById('csv-export-menu').classList.add('hidden');
+  if (!allReceipts.length) { alert('エクスポートするレシートがありません'); return; }
+
+  const { exportable, skipped } = getCsvExportList();
+  if (!exportable.length) {
+    alert('条件に一致するレシートがありません');
+    return;
+  }
+
+  const headers = ['日付', '入金', '出金', '摘要', '軽減税率', '部門', '請求書区分'];
+
+  const rows = exportable.map(r => [
+    r.date.replaceAll('-', '/'),
+    '',
+    r.amount != null ? r.amount : '',
+    [r.store_name, r.memo].filter(Boolean).join('　'),
+    r.tax_rate === 8 ? '軽' : '',
+    '',
+    r.is_qualified ? '' : '区分記載',
+  ]);
+
+  const csv = [headers, ...rows].map(row => row.map(escapeCsvField).join(',')).join('\r\n');
+
+  // 弥生のCSV取込はShift-JIS前提のため、UTF-8ではなくSJISでエンコードする。
+  // Shift-JISにはアクセント付きラテン文字（例：EXCELSIOR CAFFÉ の É）が存在せず、
+  // そのまま変換すると "?" に置き換わってしまうため、NFD分解して結合文字（アクセント）
+  // だけを取り除き、素のアルファベットに落としてから変換する。
+  // 踏んだバグ：NFD分解は「ダ」のような濁点付きカナも「タ」+結合濁点に分解してしまい、
+  // 結合濁点はSJISで単独表現できず同じく "?" 化する。最後にNFCへ戻して濁点付きカナを
+  // 元の合成済み文字に復元することで、ラテン文字のアクセントだけを落とす
+  const normalized = csv.normalize('NFD').replace(/[\u0300-\u036f]/g, '').normalize('NFC');
+  const unicodeArray = Encoding.stringToCode(normalized);
+  const sjisArray = Encoding.convert(unicodeArray, { to: 'SJIS', from: 'UNICODE' });
+  const blob = new Blob([new Uint8Array(sjisArray)], { type: 'text/csv' });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `receipts_yayoi_${today()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  if (skipped) {
+    alert(`日付未入力の${skipped}件を除いて弥生用CSVを出力しました。`);
   }
 });
 
