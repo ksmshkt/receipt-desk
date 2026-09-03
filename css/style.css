@@ -225,9 +225,10 @@ header .logo {
 }
 
 .upload-icon {
-  font-size: 48px;
+  width: 64px;
+  height: 64px;
   display: block;
-  margin-bottom: 6px;
+  margin: 0 auto 6px;
 }
 
 .upload-hint {
