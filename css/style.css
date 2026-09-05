@@ -358,18 +358,6 @@ header .logo {
 
 .search-bar input:focus { border-color: var(--primary); }
 
-.search-bar select {
-  padding: 10px 32px 10px 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 16px;
-  background: var(--surface);
-  outline: none;
-}
-
-.search-bar select:focus { border-color: var(--primary); }
-
-.search-bar select,
 .csv-bar select {
   appearance: none;
   -webkit-appearance: none;

@@ -526,8 +526,6 @@ async function saveAllReceipts() {
 document.getElementById('add-save-btn').addEventListener('click', saveAllReceipts);
 
 // Load receipts
-let currentYearFilter = 'all';
-
 async function loadReceipts() {
   const search = document.getElementById('search-input').value.trim();
 
@@ -543,40 +541,8 @@ async function loadReceipts() {
   if (error) return;
 
   allReceipts = data;
-  populateYearFilterOptions(data);
-  renderReceipts(filterReceiptsByYear(data));
+  renderReceipts(data);
 }
-
-// Rebuilds the year dropdown from whatever years actually exist in the
-// data, so it never shows a year with nothing in it. Keeps the current
-// selection if it's still a valid option, otherwise falls back to "all".
-function populateYearFilterOptions(receipts) {
-  const select = document.getElementById('year-filter');
-  const years = [...new Set(receipts.filter(r => r.date).map(r => r.date.slice(0, 4)))]
-    .sort((a, b) => b.localeCompare(a));
-
-  const previousValue = select.value;
-  select.innerHTML = [
-    '<option value="all">すべての年度</option>',
-    ...years.map(y => `<option value="${y}">${y}年</option>`),
-    '<option value="none">日付なし</option>',
-  ].join('');
-
-  const stillValid = previousValue === 'all' || previousValue === 'none' || years.includes(previousValue);
-  select.value = stillValid ? previousValue : 'all';
-  currentYearFilter = select.value;
-}
-
-function filterReceiptsByYear(receipts) {
-  if (currentYearFilter === 'all') return receipts;
-  if (currentYearFilter === 'none') return receipts.filter(r => !r.date);
-  return receipts.filter(r => r.date && r.date.startsWith(currentYearFilter));
-}
-
-document.getElementById('year-filter').addEventListener('change', (e) => {
-  currentYearFilter = e.target.value;
-  renderReceipts(filterReceiptsByYear(allReceipts));
-});
 
 function renderReceipts(receipts) {
   const list = document.getElementById('receipt-list');
