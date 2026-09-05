@@ -109,9 +109,25 @@
       <input type="date" id="csv-range-start" class="hidden">
       <span id="csv-range-tilde" class="hidden">〜</span>
       <input type="date" id="csv-range-end" class="hidden">
-      <button id="export-images-btn" class="btn-ghost">🖼 画像一括DL</button>
+      <button id="export-images-btn" class="btn-ghost">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="2" width="13" height="13" rx="2"/>
+          <rect x="7" y="7" width="13" height="13" rx="2" fill="var(--bg)"/>
+          <path d="M18 12v6M15.5 15.5 18 18l2.5-2.5" stroke-width="1.6"/>
+        </svg>
+        画像一括DL
+      </button>
       <div class="csv-export">
-        <button id="csv-export-toggle" class="btn-ghost">⬇ CSV</button>
+        <button id="csv-export-toggle" class="btn-ghost">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="3" width="16" height="14" rx="2"/>
+            <line x1="2" y1="8" x2="18" y2="8"/>
+            <line x1="2" y1="13" x2="18" y2="13"/>
+            <line x1="8" y1="3" x2="8" y2="17"/>
+            <path d="M20 10v8M17.5 15.5 20 18l2.5-2.5" stroke-width="1.6"/>
+          </svg>
+          CSV
+        </button>
         <div id="csv-export-menu" class="csv-export-menu hidden">
           <button id="export-csv-btn" class="btn-ghost">汎用形式</button>
           <button id="export-csv-yayoi-btn" class="btn-ghost">弥生形式（やよいの青色申告 オンライン）</button>

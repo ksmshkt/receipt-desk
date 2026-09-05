@@ -407,6 +407,8 @@ header .logo {
 
 .csv-bar #export-images-btn { margin-left: auto; }
 
+.csv-bar .btn-ghost { display: inline-flex; align-items: center; gap: 6px; }
+
 .csv-export { position: relative; display: flex; }
 
 .csv-export-menu {
