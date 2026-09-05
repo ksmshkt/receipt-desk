@@ -97,6 +97,7 @@ document.addEventListener('click', (e) => {
 
 // Logout
 document.getElementById('logout-btn').addEventListener('click', async () => {
+  if (!confirm('ログアウトしますか？')) return;
   await client.auth.signOut();
   window.location.href = 'index.html';
 });

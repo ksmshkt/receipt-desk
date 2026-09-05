@@ -163,10 +163,17 @@ header .logo {
   color: var(--text-muted);
 }
 
-.account-menu .btn-ghost {
+.account-menu .btn-ghost,
+.account-menu .btn-danger {
   text-align: left;
-  padding: 4px 0;
+  padding: 6px 8px;
+  border-radius: 6px;
 }
+
+.account-menu .btn-ghost { color: var(--text); }
+
+.account-menu .btn-ghost:hover { background: var(--bg); color: var(--primary); }
+.account-menu .btn-danger:hover { background: var(--bg); }
 
 /* Tabs */
 .tabs {
