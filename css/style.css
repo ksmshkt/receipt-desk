@@ -351,6 +351,27 @@ header .logo {
 
 .search-bar input:focus { border-color: var(--primary); }
 
+.search-bar select {
+  padding: 10px 32px 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 16px;
+  background: var(--surface);
+  outline: none;
+}
+
+.search-bar select:focus { border-color: var(--primary); }
+
+.search-bar select,
+.csv-bar select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2385817a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+}
+
 .csv-bar {
   margin-bottom: 12px;
   display: flex;
@@ -365,9 +386,13 @@ header .logo {
   border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 14px;
-  background: var(--surface);
+  background-color: var(--surface);
   outline: none;
   color: var(--text);
+}
+
+.csv-bar select {
+  padding-right: 30px;
 }
 
 .csv-bar select:focus,
