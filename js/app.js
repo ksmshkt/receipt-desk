@@ -611,6 +611,17 @@ function getCsvDateRange() {
   };
 }
 
+// Short label for the currently selected period, used in confirm dialogs
+// so it's clear at the moment of export which range is actually targeted.
+function getCsvRangeLabel() {
+  const mode = document.getElementById('csv-range-select').value;
+  const labels = { all: 'すべての期間', month: '今月', quarter: '今四半期', year: '今年' };
+  if (mode !== 'custom') return labels[mode];
+  const start = document.getElementById('csv-range-start').value || '指定なし';
+  const end = document.getElementById('csv-range-end').value || '指定なし';
+  return `${start} 〜 ${end}`;
+}
+
 // Bulk image download (ZIP) — unlike CSV, date-less receipts (image-only
 // archival) are included when no specific range is selected, since that's
 // exactly the case this feature exists for.
@@ -625,6 +636,7 @@ function getImageExportList() {
 document.getElementById('export-images-btn').addEventListener('click', async () => {
   const exportable = getImageExportList();
   if (!exportable.length) { alert('ダウンロードする画像がありません'); return; }
+  if (!confirm(`「${getCsvRangeLabel()}」の画像${exportable.length}件をZIPでダウンロードします。よろしいですか？`)) return;
 
   const btn = document.getElementById('export-images-btn');
   const progress = document.getElementById('image-export-progress');
@@ -698,6 +710,7 @@ document.getElementById('export-csv-btn').addEventListener('click', () => {
     alert('条件に一致するレシートがありません');
     return;
   }
+  if (!confirm(`「${getCsvRangeLabel()}」のレシート${exportable.length}件をCSVでダウンロードします。よろしいですか？`)) return;
 
   const headers = ['日付', '店名・取引先', '金額', '適格請求書', '消費税率', '勘定科目', '取引手段', '摘要', '画像リンク'];
   const baseUrl = `${window.location.origin}${window.location.pathname}`;
@@ -743,6 +756,7 @@ document.getElementById('export-csv-yayoi-btn').addEventListener('click', () => 
     alert('条件に一致するレシートがありません');
     return;
   }
+  if (!confirm(`「${getCsvRangeLabel()}」のレシート${exportable.length}件をCSV（弥生形式）でダウンロードします。よろしいですか？`)) return;
 
   const headers = ['日付', '入金', '出金', '摘要', '軽減税率', '部門', '請求書区分'];
 
