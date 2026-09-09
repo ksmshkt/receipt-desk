@@ -4,6 +4,18 @@ let allReceipts = [];
 let addItems = [];
 let addBusy = false;
 
+// Sticky headers stack (header -> tabs -> toolbar) each need to know the
+// exact rendered height of the ones above them. Measuring at runtime avoids
+// hardcoding pixel guesses that drift whenever fonts/padding change.
+function updateStickyOffsets() {
+  const header = document.querySelector('header');
+  const tabs = document.querySelector('.tabs');
+  if (header) document.documentElement.style.setProperty('--header-height', `${header.offsetHeight}px`);
+  if (tabs) document.documentElement.style.setProperty('--tabs-height', `${tabs.offsetHeight}px`);
+}
+updateStickyOffsets();
+window.addEventListener('resize', updateStickyOffsets);
+
 const CATEGORY_OPTIONS = ['会議費', '交通費', '消耗品費', '通信費', '接待交際費', '研修費', '広告宣伝費', 'その他'];
 
 // supabase-js only gives a generic message for non-2xx Edge Function responses
