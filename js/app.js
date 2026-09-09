@@ -569,16 +569,18 @@ function renderReceipts(receipts) {
   empty.classList.add('hidden');
   list.innerHTML = receipts.map(r => `
     <div class="receipt-card" onclick="openReceipt('${r.id}')">
-      <div class="receipt-card-left">
+      <div class="receipt-card-top">
         <div class="receipt-card-date">${r.date || '日付なし'}</div>
-        <div class="receipt-card-store">${r.store_name || '店名なし'}</div>
-        ${r.category ? `<div class="receipt-card-category">${r.category}</div>` : ''}
+        <div class="receipt-card-chip">
+          ${r.category ? `<span class="receipt-card-chip-category">${r.category}</span><span class="receipt-card-chip-divider"></span>` : ''}
+          <span class="receipt-card-chip-badge ${r.is_qualified ? 'is-qualified' : 'is-unqualified'}">
+            ${r.is_qualified ? '適格' : '非適格'}
+          </span>
+        </div>
       </div>
-      <div class="receipt-card-right">
+      <div class="receipt-card-bottom">
+        <div class="receipt-card-store">${r.store_name || '店名なし'}</div>
         <div class="receipt-card-amount">${r.amount != null ? '¥' + r.amount.toLocaleString() : '-'}</div>
-        <span class="badge ${r.is_qualified ? 'badge-qualified' : 'badge-unqualified'}">
-          ${r.is_qualified ? '適格' : '非適格'}
-        </span>
       </div>
     </div>
   `).join('');
