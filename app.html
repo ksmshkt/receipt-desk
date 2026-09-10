@@ -150,14 +150,7 @@
   <!-- 詳細モーダル -->
   <div id="modal-overlay" class="modal-overlay hidden">
     <div id="modal" class="modal">
-      <div class="modal-header">
-        <button id="modal-close" class="btn-ghost">✕ 閉じる</button>
-        <div class="modal-actions">
-          <button id="download-btn" class="btn-ghost">⬇ 保存</button>
-          <button id="delete-btn" class="btn-danger">削除</button>
-        </div>
-      </div>
-
+      <div class="modal-body">
       <div id="modal-image-container">
         <img id="modal-image" src="" alt="レシート">
       </div>
@@ -219,8 +212,17 @@
           <label>摘要</label>
           <input type="text" id="modal-memo">
         </div>
-        <button type="submit" class="btn-primary">更新する</button>
       </form>
+      </div>
+
+      <div class="modal-footer">
+        <button id="modal-close" class="btn-ghost">✕ 閉じる</button>
+        <button type="submit" form="modal-form" class="btn-primary">更新する</button>
+        <div class="modal-actions">
+          <button id="download-btn" class="btn-ghost">DL</button>
+          <button id="delete-btn" class="btn-danger">削除</button>
+        </div>
+      </div>
     </div>
   </div>
 
