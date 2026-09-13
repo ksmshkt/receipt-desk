@@ -818,6 +818,30 @@ function escapeCsvField(field) {
   return str;
 }
 
+// Segmented control (replaces native radio buttons for a full-width, app-styled
+// toggle). State lives on the button's aria-pressed attribute rather than a
+// hidden radio input — simpler than keeping two things in sync.
+document.querySelectorAll('.segmented').forEach(group => {
+  group.addEventListener('click', (e) => {
+    const btn = e.target.closest('.segmented-option');
+    if (!btn) return;
+    group.querySelectorAll('.segmented-option').forEach(opt => opt.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+function setSegmentedValue(name, value) {
+  const group = document.querySelector(`.segmented[data-name="${name}"]`);
+  group.querySelectorAll('.segmented-option').forEach(opt => {
+    opt.classList.toggle('active', opt.dataset.value === value);
+  });
+}
+
+function getSegmentedValue(name) {
+  const active = document.querySelector(`.segmented[data-name="${name}"] .segmented-option.active`);
+  return active ? active.dataset.value : null;
+}
+
 // Open receipt modal
 async function openReceipt(id) {
   const r = allReceipts.find(r => r.id === id);
@@ -832,12 +856,8 @@ async function openReceipt(id) {
   document.getElementById('modal-category').value = r.category || '';
   document.getElementById('modal-payment-method').value = r.payment_method || '';
   document.getElementById('modal-memo').value = r.memo || '';
-  document.querySelectorAll('input[name="modal_qualified"]').forEach(radio => {
-    radio.checked = radio.value === String(r.is_qualified);
-  });
-  document.querySelectorAll('input[name="modal_tax_rate"]').forEach(radio => {
-    radio.checked = radio.value === String(r.tax_rate);
-  });
+  setSegmentedValue('modal_qualified', String(r.is_qualified));
+  setSegmentedValue('modal_tax_rate', String(r.tax_rate));
 
   const imageContainer = document.getElementById('modal-image-container');
   const modalImage = document.getElementById('modal-image');
@@ -875,8 +895,8 @@ document.getElementById('modal-form').addEventListener('submit', async (e) => {
       date: document.getElementById('modal-date').value || null,
       store_name: document.getElementById('modal-store').value || null,
       amount: document.getElementById('modal-amount').value ? parseInt(document.getElementById('modal-amount').value) : null,
-      is_qualified: document.querySelector('input[name="modal_qualified"]:checked').value === 'true',
-      tax_rate: document.querySelector('input[name="modal_tax_rate"]:checked') ? parseInt(document.querySelector('input[name="modal_tax_rate"]:checked').value) : null,
+      is_qualified: getSegmentedValue('modal_qualified') === 'true',
+      tax_rate: getSegmentedValue('modal_tax_rate') ? parseInt(getSegmentedValue('modal_tax_rate')) : null,
       category: document.getElementById('modal-category').value || null,
       payment_method: document.getElementById('modal-payment-method').value || null,
       memo: document.getElementById('modal-memo').value || null,
