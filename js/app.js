@@ -68,7 +68,7 @@ async function loadAccountUsage() {
 
 async function init() {
   const { data: { session } } = await client.auth.getSession();
-  if (!session) { window.location.href = 'index.html'; return; }
+  if (!session) { window.location.href = 'login.html'; return; }
 
   await loadReceipts();
   await loadAccountUsage();
@@ -111,7 +111,7 @@ document.addEventListener('click', (e) => {
 document.getElementById('logout-btn').addEventListener('click', async () => {
   if (!confirm('ログアウトしますか？')) return;
   await client.auth.signOut();
-  window.location.href = 'index.html';
+  window.location.href = 'login.html';
 });
 
 // Delete account (irreversible — double confirm)
@@ -124,7 +124,7 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
     const { error } = await client.functions.invoke('delete-account');
     if (error) throw error;
     await client.auth.signOut();
-    window.location.href = 'index.html';
+    window.location.href = 'login.html';
   } catch (err) {
     alert('退会処理に失敗しました: ' + (await extractFunctionErrorMessage(err)));
   } finally {

@@ -1,0 +1,6 @@
+{
+  "redirects": [
+    { "source": "/landing.html", "destination": "/", "permanent": true },
+    { "source": "/landing", "destination": "/", "permanent": true }
+  ]
+}
