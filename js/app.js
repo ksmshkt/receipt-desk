@@ -154,14 +154,24 @@ function buildSelectOptions(options, selectedValue) {
   ).join('');
 }
 
-function statusBadge(status) {
-  switch (status) {
-    case 'pending': return { label: '未読取', cls: 'badge-pending' };
-    case 'running': return { label: '読取中...', cls: 'badge-running' };
-    case 'done': return { label: '読取済み', cls: 'badge-done' };
-    case 'error': return { label: '読取エラー', cls: 'badge-error' };
-    default: return { label: '', cls: '' };
-  }
+// OCR status → the stamp pressed on the receipt photo + the short label on its card
+const OCR_STATUS_VIEW = {
+  pending: { stamp: ['未', '読取'], label: '未読取' },
+  running: { stamp: ['読取', '中'], label: '読み取り中…' },
+  done: { stamp: ['読取', '済'], label: '読み取り済み' },
+  error: { stamp: ['読取', '失敗'], label: '読み取り失敗' },
+};
+
+function stampHtml(item) {
+  const view = OCR_STATUS_VIEW[item.ocrStatus] || OCR_STATUS_VIEW.pending;
+  return `<div class="desk-stamp desk-stamp-${item.ocrStatus}" style="transform: rotate(${item.tilt.stamp}deg)" aria-hidden="true"><span>${view.stamp[0]}</span><span>${view.stamp[1]}</span></div>`;
+}
+
+// Random (not alternating-by-rule) tilt so the receipts look casually spread on the desk
+function randomTilt() {
+  const between = (min, max) => Math.round((min + Math.random() * (max - min)) * 10) / 10;
+  const sign = Math.random() < 0.5 ? -1 : 1;
+  return { photo: sign * between(1.5, 5), card: between(-1.5, 1.5), stamp: between(-16, 14) };
 }
 
 // File selection: append (never reset), each item starts fully editable with no OCR run yet
@@ -181,6 +191,8 @@ document.getElementById('image-input').addEventListener('change', async (e) => {
         ocrStatus: 'pending',
         ocrError: null,
         selected: true,
+        flipped: addItems.length % 2 === 1,
+        tilt: randomTilt(),
         fields: {
           date: '',
           store_name: '',
@@ -199,57 +211,94 @@ document.getElementById('image-input').addEventListener('change', async (e) => {
   renderAddList();
 });
 
+// The add buttons are <label for="image-input"> (so tapping opens the picker
+// natively on iOS too); let keyboard users trigger them like real buttons.
+document.querySelectorAll('label[for="image-input"]').forEach(label => {
+  label.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    document.getElementById('image-input').click();
+  });
+});
+
+const CHEVRON_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+const CLIP_SVG = '<svg class="desk-clip-card" width="16" height="46" viewBox="0 0 16 46" fill="none" aria-hidden="true"><path d="M5 30V8a3.5 3.5 0 0 1 7 0v26a5.5 5.5 0 0 1-11 0V12" stroke="#8e979f" stroke-width="2" stroke-linecap="round"/></svg>';
+
+// Chips summarising what OCR read for the collapsed detail fields — only after a
+// successful read, so untouched defaults (適格 / 10%) aren't presented as facts.
+function ocrChipsHtml(item) {
+  if (item.ocrStatus !== 'done') return '';
+  const chips = [item.fields.is_qualified ? '適格' : '非適格'];
+  if (item.fields.tax_rate) chips.push(`${item.fields.tax_rate}%`);
+  if (item.fields.payment_method) chips.push(item.fields.payment_method);
+  return chips.map(c => `<span class="desk-chip">${escapeHtmlAttr(c)}</span>`).join('');
+}
+
 function renderAddRowHtml(item) {
-  const badge = statusBadge(item.ocrStatus);
+  const view = OCR_STATUS_VIEW[item.ocrStatus] || OCR_STATUS_VIEW.pending;
+  const fid = (name) => `${item.id}-${name}`;
   return `
-    <div class="receipt-row" data-add-id="${item.id}">
-      <div class="receipt-row-header">
-        <input type="checkbox" class="receipt-row-select" data-action="select" ${item.selected ? 'checked' : ''}>
-        <img class="receipt-row-thumb" src="${item.previewUrl}" alt="レシート画像" data-action="preview">
-        <span class="badge ${badge.cls}">${badge.label}</span>
-        <button type="button" class="btn-danger receipt-row-remove" data-action="remove">除外</button>
+    <div class="receipt-row${item.flipped ? ' is-flipped' : ''}${item.selected ? ' is-selected' : ''}" data-add-id="${item.id}">
+      <div class="desk-photo" style="transform: rotate(${item.tilt.photo}deg)">
+        <div class="desk-photo-paper">
+          <img src="${item.previewUrl}" alt="レシート画像（タップで拡大）" data-action="preview">
+        </div>
+        ${stampHtml(item)}
       </div>
-      <div class="form-group">
-        <label>日付</label>
-        <input type="date" data-field="date" value="${item.fields.date || ''}">
-      </div>
-      <div class="form-group">
-        <label>店名・取引先</label>
-        <input type="text" data-field="store_name" value="${escapeHtmlAttr(item.fields.store_name)}" placeholder="例：スターバックス">
-      </div>
-      <div class="form-group">
-        <label>金額（円）</label>
-        <input type="number" min="0" data-field="amount" value="${item.fields.amount ?? ''}" placeholder="例：1500">
-      </div>
-      <div class="form-group">
-        <label>勘定科目</label>
-        <select data-field="category">${buildSelectOptions(CATEGORY_OPTIONS, item.fields.category)}</select>
-      </div>
-      <button type="button" class="btn-ghost receipt-row-detail-toggle" data-action="toggle-detail">詳細を編集 ▼</button>
-      <div class="receipt-row-detail hidden">
-        <div class="form-group">
-          <label>適格請求書（インボイス）</label>
-          <div class="radio-group">
-            <label class="radio-label"><input type="radio" name="qualified-${item.id}" data-field="is_qualified" value="true" ${item.fields.is_qualified ? 'checked' : ''}> 適格</label>
-            <label class="radio-label"><input type="radio" name="qualified-${item.id}" data-field="is_qualified" value="false" ${!item.fields.is_qualified ? 'checked' : ''}> 非適格</label>
+      <div class="desk-card" style="transform: rotate(${item.tilt.card}deg)">
+        ${CLIP_SVG}
+        <div class="desk-card-top">
+          <label class="desk-chk"><input type="checkbox" data-action="select" ${item.selected ? 'checked' : ''}>選択</label>
+          <span class="desk-status desk-status-${item.ocrStatus}">${view.label}</span>
+          <button type="button" class="desk-x-btn" data-action="remove" aria-label="このレシートを除外">除外
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+        <div class="desk-f desk-f-date">
+          <label for="${fid('date')}">日付</label>
+          <input type="date" id="${fid('date')}" data-field="date" value="${item.fields.date || ''}">
+        </div>
+        <div class="desk-f desk-f-store_name">
+          <label for="${fid('store')}">店名</label>
+          <input type="text" id="${fid('store')}" data-field="store_name" value="${escapeHtmlAttr(item.fields.store_name)}" placeholder="店名・取引先">
+        </div>
+        <div class="desk-f desk-f-amount">
+          <label for="${fid('amount')}">金額</label>
+          <div class="desk-f-amt"><span aria-hidden="true">¥</span><input type="number" min="0" inputmode="numeric" id="${fid('amount')}" data-field="amount" value="${item.fields.amount ?? ''}" placeholder="0"></div>
+        </div>
+        <div class="desk-f desk-f-category">
+          <label for="${fid('category')}">勘定科目</label>
+          <div class="desk-f-sel"><select id="${fid('category')}" data-field="category">${buildSelectOptions(CATEGORY_OPTIONS, item.fields.category)}</select>${CHEVRON_SVG}</div>
+        </div>
+        <div class="desk-more-row">
+          <button type="button" class="desk-more" data-action="toggle-detail" aria-expanded="false"><span>詳細</span>${CHEVRON_SVG}</button>
+          ${ocrChipsHtml(item)}
+        </div>
+        <div class="desk-detail hidden">
+          <div class="desk-radio-row">
+            <span>インボイス</span>
+            <div class="radio-group">
+              <label class="radio-label"><input type="radio" name="qualified-${item.id}" data-field="is_qualified" value="true" ${item.fields.is_qualified ? 'checked' : ''}> 適格</label>
+              <label class="radio-label"><input type="radio" name="qualified-${item.id}" data-field="is_qualified" value="false" ${!item.fields.is_qualified ? 'checked' : ''}> 非適格</label>
+            </div>
           </div>
-        </div>
-        <div class="form-group">
-          <label>消費税率</label>
-          <div class="radio-group">
-            <label class="radio-label"><input type="radio" name="tax-${item.id}" data-field="tax_rate" value="10" ${item.fields.tax_rate === 10 ? 'checked' : ''}> 10%</label>
-            <label class="radio-label"><input type="radio" name="tax-${item.id}" data-field="tax_rate" value="8" ${item.fields.tax_rate === 8 ? 'checked' : ''}> 8%（軽減税率）</label>
+          <div class="desk-radio-row">
+            <span>税率</span>
+            <div class="radio-group">
+              <label class="radio-label"><input type="radio" name="tax-${item.id}" data-field="tax_rate" value="10" ${item.fields.tax_rate === 10 ? 'checked' : ''}> 10%</label>
+              <label class="radio-label"><input type="radio" name="tax-${item.id}" data-field="tax_rate" value="8" ${item.fields.tax_rate === 8 ? 'checked' : ''}> 8%軽減</label>
+            </div>
           </div>
+          <div class="desk-f desk-f-payment_method">
+            <label for="${fid('payment')}">取引手段</label>
+            <input type="text" id="${fid('payment')}" data-field="payment_method" value="${escapeHtmlAttr(item.fields.payment_method)}" placeholder="現金、事業用カードなど">
+          </div>
+          <div class="desk-f desk-f-memo">
+            <label for="${fid('memo')}">摘要</label>
+            <input type="text" id="${fid('memo')}" data-field="memo" value="${escapeHtmlAttr(item.fields.memo)}" placeholder="任意">
+          </div>
+          ${item.ocrStatus === 'error' ? `<p class="error-msg">自動読み取りに失敗：${escapeHtmlAttr(item.ocrError || '')}</p>` : ''}
         </div>
-        <div class="form-group">
-          <label>取引手段</label>
-          <input type="text" data-field="payment_method" value="${escapeHtmlAttr(item.fields.payment_method)}" placeholder="例：現金、事業用カード">
-        </div>
-        <div class="form-group">
-          <label>摘要</label>
-          <input type="text" data-field="memo" value="${escapeHtmlAttr(item.fields.memo)}" placeholder="任意">
-        </div>
-        ${item.ocrStatus === 'error' ? `<p class="error-msg">自動読み取りに失敗しました：${escapeHtmlAttr(item.ocrError || '')}</p>` : ''}
       </div>
     </div>
   `;
@@ -271,16 +320,22 @@ function updateAddRowBadge(id) {
   const item = addItems.find(it => it.id === id);
   const el = document.querySelector(`.receipt-row[data-add-id="${id}"]`);
   if (!item || !el) return;
-  const badge = statusBadge(item.ocrStatus);
-  const badgeEl = el.querySelector('.badge');
-  badgeEl.className = `badge ${badge.cls}`;
-  badgeEl.textContent = badge.label;
+  const view = OCR_STATUS_VIEW[item.ocrStatus] || OCR_STATUS_VIEW.pending;
+  el.querySelector('.desk-stamp').outerHTML = stampHtml(item);
+  const statusEl = el.querySelector('.desk-status');
+  statusEl.className = `desk-status desk-status-${item.ocrStatus}`;
+  statusEl.textContent = view.label;
 }
 
 function updateAddToolbar() {
   const toolbar = document.getElementById('add-toolbar');
   const saveBtn = document.getElementById('add-save-btn');
   const bulkRow = document.getElementById('bulk-apply-row');
+
+  // Empty desk shows the big "spread your receipts" frame; once anything is on the
+  // desk it shrinks to the slim add strip above the list.
+  document.getElementById('add-empty').classList.toggle('hidden', addItems.length > 0);
+  document.getElementById('add-slip').classList.toggle('hidden', addItems.length === 0);
 
   if (!addItems.length) {
     toolbar.classList.add('hidden');
@@ -293,7 +348,10 @@ function updateAddToolbar() {
 
   toolbar.classList.remove('hidden');
   saveBtn.classList.remove('hidden');
-  document.getElementById('add-count-label').textContent = `${selectedCount}件選択中`;
+  if (!addBusy) {
+    document.getElementById('add-count-label').innerHTML = `<b>${selectedCount}</b>件選択中`;
+  }
+  document.getElementById('bulk-count').textContent = selectedCount;
   saveBtn.disabled = selectedCount === 0;
   bulkRow.classList.toggle('hidden', selectedCount < 2);
 }
@@ -312,19 +370,25 @@ document.getElementById('add-list').addEventListener('click', (e) => {
   const row = e.target.closest('.receipt-row');
   if (!row) return;
   const id = row.dataset.addId;
+  // Buttons contain an icon/text span, so look up the nearest element that carries the action
+  const actionEl = e.target.closest('[data-action]');
+  const action = actionEl?.dataset.action;
 
-  if (e.target.dataset.action === 'remove') {
+  if (action === 'remove') {
     removeAddItem(id);
-  } else if (e.target.dataset.action === 'toggle-detail') {
-    const detail = row.querySelector('.receipt-row-detail');
+  } else if (action === 'toggle-detail') {
+    const detail = row.querySelector('.desk-detail');
     const willShow = detail.classList.contains('hidden');
     detail.classList.toggle('hidden');
-    e.target.textContent = willShow ? '詳細を閉じる ▲' : '詳細を編集 ▼';
-  } else if (e.target.dataset.action === 'select') {
+    actionEl.classList.toggle('is-open', willShow);
+    actionEl.setAttribute('aria-expanded', String(willShow));
+    actionEl.querySelector('span').textContent = willShow ? '閉じる' : '詳細';
+  } else if (action === 'select') {
     const item = addItems.find(it => it.id === id);
-    if (item) item.selected = e.target.checked;
+    if (item) item.selected = actionEl.checked;
+    row.classList.toggle('is-selected', actionEl.checked);
     updateAddToolbar();
-  } else if (e.target.dataset.action === 'preview') {
+  } else if (action === 'preview') {
     const item = addItems.find(it => it.id === id);
     if (item) openImageLightbox(item.previewUrl);
   }
@@ -336,7 +400,9 @@ document.getElementById('add-list').addEventListener('click', (e) => {
 // since choosing the field IS the opt-in signal.
 // Kept as its own function (rather than inlined in the click handler) so a future
 // rule-matching feature can call the same entry point instead of duplicating this logic.
-document.getElementById('bulk-apply-value-select').innerHTML = buildSelectOptions(CATEGORY_OPTIONS, '');
+// Blank here means "clear this field on every selected row", so label it as such
+document.getElementById('bulk-apply-value-select').innerHTML =
+  '<option value="">（空欄にする）</option>' + buildSelectOptions(CATEGORY_OPTIONS, '').replace('<option value="">未選択</option>', '');
 
 function applyFieldsToItems(ids, fields) {
   ids.forEach(id => {
@@ -355,6 +421,10 @@ document.getElementById('bulk-apply-field').addEventListener('change', (e) => {
 
   valueSelect.value = '';
   valueText.value = '';
+  // Outline the fields that will be overwritten (CSS keys off this attribute)
+  document.getElementById('add-list').dataset.bulkField = field;
+  document.getElementById('bulk-value-wrap').classList.toggle('hidden', !field);
+  document.getElementById('bulk-value-label').htmlFor = field === 'category' ? 'bulk-apply-value-select' : 'bulk-apply-value-text';
 
   if (!field) {
     valueSelect.classList.add('hidden');
@@ -556,44 +626,78 @@ async function loadReceipts() {
   renderReceipts(data);
 }
 
+const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
+
+function ledgerRowHtml(r) {
+  let day = '—';
+  let weekday = '';
+  if (r.date) {
+    const [y, m, d] = r.date.split('-').map(Number);
+    day = String(d).padStart(2, '0');
+    weekday = WEEKDAYS[new Date(y, m - 1, d).getDay()];
+  }
+  const store = r.store_name
+    ? `<span class="desk-lg-store">${escapeHtmlAttr(r.store_name)}</span>`
+    : '<span class="desk-lg-store is-none">店名なし</span>';
+  const category = r.category
+    ? `<span>${escapeHtmlAttr(r.category)}</span>`
+    : '<span class="desk-lg-warn">勘定科目なし</span>';
+  const qualified = r.is_qualified
+    ? '<span class="desk-lg-q">適格</span>'
+    : '<span class="desk-lg-q is-no">非適格</span>';
+  const amount = r.amount != null ? '¥' + r.amount.toLocaleString() : '—';
+  return `
+    <li><button type="button" class="desk-lg-row" data-id="${escapeHtmlAttr(r.id)}">
+      <span class="desk-lg-day"><span class="desk-lg-d">${day}</span><span class="desk-lg-w">${weekday}</span></span>
+      <span class="desk-lg-main">${store}<span class="desk-lg-meta">${category}${qualified}</span></span>
+      <span class="desk-lg-amt">${amount}</span>
+    </button></li>`;
+}
+
+// 帳簿は月ごとに区切る。並びは日付の新しい順で、日付なしは最後（loadReceiptsの並び順のまま）
 function renderReceipts(receipts) {
   const list = document.getElementById('receipt-list');
   const empty = document.getElementById('empty-state');
 
+  list.classList.toggle('hidden', !receipts.length);
+  empty.classList.toggle('hidden', !!receipts.length);
   if (!receipts.length) {
     list.innerHTML = '';
-    empty.classList.remove('hidden');
     return;
   }
 
-  empty.classList.add('hidden');
-  list.innerHTML = receipts.map(r => `
-    <div class="receipt-card" onclick="openReceipt('${r.id}')">
-      <div class="receipt-card-top">
-        <div class="receipt-card-date">${r.date || '日付なし'}</div>
-        <div class="receipt-card-chip">
-          ${r.category ? `<span class="receipt-card-chip-category">${r.category}</span><span class="receipt-card-chip-divider"></span>` : ''}
-          <span class="receipt-card-chip-badge ${r.is_qualified ? 'is-qualified' : 'is-unqualified'}">
-            ${r.is_qualified ? '適格' : '非適格'}
-          </span>
-        </div>
-      </div>
-      <div class="receipt-card-bottom">
-        <div class="receipt-card-store">${r.store_name || '店名なし'}</div>
-        <div class="receipt-card-amount">${r.amount != null ? '¥' + r.amount.toLocaleString() : '-'}</div>
-      </div>
-    </div>
-  `).join('');
+  const groups = [];
+  receipts.forEach(r => {
+    const key = r.date ? r.date.slice(0, 7) : '';
+    let group = groups[groups.length - 1];
+    if (!group || group.key !== key) {
+      group = { key, items: [] };
+      groups.push(group);
+    }
+    group.items.push(r);
+  });
+
+  list.innerHTML = groups.map(g => {
+    const heading = g.key
+      ? `<span class="desk-lg-m">${Number(g.key.slice(5, 7))}月</span><span class="desk-lg-y">${g.key.slice(0, 4)}</span>`
+      : '<span class="desk-lg-m">日付なし</span>';
+    return `
+      <h2 class="desk-lg-month">${heading}<span class="desk-lg-n">${g.items.length}件</span></h2>
+      <ul>${g.items.map(ledgerRowHtml).join('')}</ul>`;
+  }).join('');
 }
+
+document.getElementById('receipt-list').addEventListener('click', (e) => {
+  const row = e.target.closest('.desk-lg-row');
+  if (row) openReceipt(row.dataset.id);
+});
 
 document.getElementById('search-input').addEventListener('input', loadReceipts);
 
 // CSV date range picker
 document.getElementById('csv-range-select').addEventListener('change', (e) => {
   const isCustom = e.target.value === 'custom';
-  document.getElementById('csv-range-start').classList.toggle('hidden', !isCustom);
-  document.getElementById('csv-range-tilde').classList.toggle('hidden', !isCustom);
-  document.getElementById('csv-range-end').classList.toggle('hidden', !isCustom);
+  document.getElementById('csv-range-custom').classList.toggle('hidden', !isCustom);
 });
 
 function getCsvDateRange() {
@@ -691,12 +795,16 @@ document.getElementById('export-images-btn').addEventListener('click', async () 
 // CSV形式選択のアコーディオン（account-menuと同じ開閉パターン：外側クリックで閉じる）
 document.getElementById('csv-export-toggle').addEventListener('click', (e) => {
   e.stopPropagation();
-  document.getElementById('csv-export-menu').classList.toggle('hidden');
+  setCsvMenuOpen(document.getElementById('csv-export-menu').classList.contains('hidden'));
 });
+function setCsvMenuOpen(open) {
+  document.getElementById('csv-export-menu').classList.toggle('hidden', !open);
+  document.getElementById('csv-export-toggle').setAttribute('aria-expanded', String(open));
+}
 document.addEventListener('click', (e) => {
   const menu = document.getElementById('csv-export-menu');
   if (!menu.classList.contains('hidden') && !menu.contains(e.target) && e.target.id !== 'csv-export-toggle') {
-    menu.classList.add('hidden');
+    setCsvMenuOpen(false);
   }
 });
 
@@ -716,7 +824,7 @@ function getCsvExportList() {
 
 // Export CSV
 document.getElementById('export-csv-btn').addEventListener('click', () => {
-  document.getElementById('csv-export-menu').classList.add('hidden');
+  setCsvMenuOpen(false);
   if (!allReceipts.length) { alert('エクスポートするレシートがありません'); return; }
 
   const { exportable, skipped } = getCsvExportList();
@@ -762,7 +870,7 @@ document.getElementById('export-csv-btn').addEventListener('click', () => {
 // 合わせて8%の時だけ印を入れる。請求書区分は非適格の時だけ「区分記載」を入れる
 // （登録番号のない簡易な領収書＝区分記載請求書、という弥生側の用語に合わせている）。
 document.getElementById('export-csv-yayoi-btn').addEventListener('click', () => {
-  document.getElementById('csv-export-menu').classList.add('hidden');
+  setCsvMenuOpen(false);
   if (!allReceipts.length) { alert('エクスポートするレシートがありません'); return; }
 
   const { exportable, skipped } = getCsvExportList();
@@ -818,28 +926,15 @@ function escapeCsvField(field) {
   return str;
 }
 
-// Segmented control (replaces native radio buttons for a full-width, app-styled
-// toggle). State lives on the button's aria-pressed attribute rather than a
-// hidden radio input — simpler than keeping two things in sync.
-document.querySelectorAll('.segmented').forEach(group => {
-  group.addEventListener('click', (e) => {
-    const btn = e.target.closest('.segmented-option');
-    if (!btn) return;
-    group.querySelectorAll('.segmented-option').forEach(opt => opt.classList.remove('active'));
-    btn.classList.add('active');
-  });
-});
-
-function setSegmentedValue(name, value) {
-  const group = document.querySelector(`.segmented[data-name="${name}"]`);
-  group.querySelectorAll('.segmented-option').forEach(opt => {
-    opt.classList.toggle('active', opt.dataset.value === value);
+function setRadioValue(name, value) {
+  document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+    input.checked = input.value === value;
   });
 }
 
-function getSegmentedValue(name) {
-  const active = document.querySelector(`.segmented[data-name="${name}"] .segmented-option.active`);
-  return active ? active.dataset.value : null;
+function getRadioValue(name) {
+  const checked = document.querySelector(`input[name="${name}"]:checked`);
+  return checked ? checked.value : null;
 }
 
 // Open receipt modal
@@ -856,8 +951,8 @@ async function openReceipt(id) {
   document.getElementById('modal-category').value = r.category || '';
   document.getElementById('modal-payment-method').value = r.payment_method || '';
   document.getElementById('modal-memo').value = r.memo || '';
-  setSegmentedValue('modal_qualified', String(r.is_qualified));
-  setSegmentedValue('modal_tax_rate', String(r.tax_rate));
+  setRadioValue('modal_qualified', String(r.is_qualified));
+  setRadioValue('modal_tax_rate', String(r.tax_rate));
 
   const imageContainer = document.getElementById('modal-image-container');
   const modalImage = document.getElementById('modal-image');
@@ -877,8 +972,13 @@ async function openReceipt(id) {
 
 // Close modal
 document.getElementById('modal-close').addEventListener('click', closeModal);
+// 写真とカードの外側（暗くした机の部分）を押したら閉じる
 document.getElementById('modal-overlay').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('modal-overlay')) closeModal();
+  if (['modal-overlay', 'modal', 'modal-image-container'].includes(e.target.id)) closeModal();
+});
+document.getElementById('modal-image-btn').addEventListener('click', () => {
+  const src = document.getElementById('modal-image').getAttribute('src');
+  if (src) openImageLightbox(src);
 });
 
 function closeModal() {
@@ -895,8 +995,8 @@ document.getElementById('modal-form').addEventListener('submit', async (e) => {
       date: document.getElementById('modal-date').value || null,
       store_name: document.getElementById('modal-store').value || null,
       amount: document.getElementById('modal-amount').value ? parseInt(document.getElementById('modal-amount').value) : null,
-      is_qualified: getSegmentedValue('modal_qualified') === 'true',
-      tax_rate: getSegmentedValue('modal_tax_rate') ? parseInt(getSegmentedValue('modal_tax_rate')) : null,
+      is_qualified: getRadioValue('modal_qualified') === 'true',
+      tax_rate: getRadioValue('modal_tax_rate') ? parseInt(getRadioValue('modal_tax_rate')) : null,
       category: document.getElementById('modal-category').value || null,
       payment_method: document.getElementById('modal-payment-method').value || null,
       memo: document.getElementById('modal-memo').value || null,

@@ -1,0 +1,582 @@
+/*
+ * 木目デスクのデザイン（app.html専用）。
+ * style.cssは全ページ共通なので、ここで上書きするスタイルは body.desk-app 配下に限定する。
+ * 木目の背景は body.desk-mode のとき（追加・一覧の両タブ）に敷く。
+ */
+
+body.desk-app {
+  --desk-wood: #a06d40;
+  --desk-ink: #2a1f16;
+  --desk-ink-soft: #6b5a45;
+  --desk-cream: #f6efe0;
+  --desk-walnut: #2b1b10;
+  --desk-red: #b83b28;
+  --desk-red-text: #9a3322;
+  --desk-blue: #2f5b8a;
+  --desk-gray: #56606e;
+}
+
+/* ---- ヘッダー・タブ（両タブ共通） ---- */
+body.desk-app header {
+  background: var(--desk-walnut);
+  border-bottom: 0;
+  color: #f3e9d6;
+  font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+}
+body.desk-app header { padding-top: 4px; padding-bottom: 4px; }
+body.desk-app header .logo { color: #f3e9d6; font-size: 17px; font-weight: 700; letter-spacing: .02em; margin-bottom: 0; }
+body.desk-app header .account-btn { color: #f3e9d6; width: 44px; height: 44px; border-radius: 10px; }
+body.desk-app header .account-btn:hover { background: rgba(255, 240, 215, .08); }
+
+body.desk-app .tabs {
+  background: var(--desk-walnut);
+  border-bottom: 5px solid var(--desk-cream);
+  padding: 6px 16px 0;
+  gap: 6px;
+  align-items: flex-end;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .3);
+  font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+}
+body.desk-app .tab {
+  flex: 0 0 auto;
+  min-width: 88px;
+  height: 34px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 10px 10px 0 0;
+  background: #d6c3a0;
+  color: #4a3826;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: inset 0 -3px 4px rgba(0, 0, 0, .12);
+}
+body.desk-app .tab.active {
+  height: 40px;
+  background: var(--desk-cream);
+  color: var(--desk-ink);
+  box-shadow: none;
+}
+
+/* ---- 木目の机 ---- */
+body.desk-app.desk-mode { background: #7a5230; }
+body.desk-app.desk-mode::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--desk-wood);
+  background-image:
+    url(../assets/textures/wood-grain.svg),
+    repeating-linear-gradient(180deg, rgba(0,0,0,0) 0 207px, rgba(25,12,4,.55) 207px 208px, rgba(255,230,190,.12) 208px 209px, rgba(0,0,0,0) 209px),
+    repeating-linear-gradient(180deg, rgba(0,0,0,.05) 0 208px, rgba(255,240,215,.04) 208px 416px, rgba(0,0,0,.09) 416px 624px),
+    radial-gradient(ellipse at 22% 0%, rgba(255,236,205,.22), rgba(255,236,205,0) 62%);
+  background-size: 900px 900px, auto, auto, auto;
+  background-position: -120px -40px, 0 0, 0 0, 0 0;
+  box-shadow: inset 0 0 70px rgba(20, 10, 3, .45);
+}
+
+body.desk-app #tab-add,
+body.desk-app #tab-list,
+.desk-modal {
+  font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+  color: var(--desk-ink);
+}
+body.desk-app #tab-add { padding-bottom: 120px; }
+/* 書き出しバー（期間指定の日付欄を出したときは約150px）に最後の行が隠れないように */
+body.desk-app #tab-list { padding-bottom: 180px; }
+
+.desk-visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---- ボタン ---- */
+.desk-btn {
+  height: 46px;
+  border-radius: 8px;
+  border: 0;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 16px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.desk-btn:disabled { opacity: .45; cursor: not-allowed; }
+.desk-btn-paper { background: transparent; color: var(--desk-ink); border: 1.5px solid var(--desk-ink); }
+.desk-btn-stamp { background: var(--desk-red); color: #fff8ee; }
+.desk-btn-ink { background: var(--desk-walnut); color: var(--desk-cream); height: 44px; font-size: 14px; }
+
+/* ---- 何もない状態 / 追加ボタン ---- */
+.desk-empty {
+  position: relative;
+  margin: 50px 8px 0;
+  border-radius: 12px;
+  background: rgba(43, 27, 16, .45);
+  border: 2px dashed rgba(246, 239, 224, .8);
+  padding: 28px 22px 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+.desk-empty h2 { font-size: 19px; font-weight: 700; color: #f6efe0; }
+.desk-empty .desk-btn { height: 52px; font-size: 16px; padding: 0 30px; }
+.desk-empty-note { font-size: 12px; color: #e6d9bf; display: flex; align-items: center; gap: 6px; }
+.desk-minis { position: relative; width: 150px; height: 104px; margin-bottom: 4px; }
+.desk-mini-wrap { position: absolute; filter: drop-shadow(0 4px 6px rgba(25, 12, 3, .3)); }
+.desk-mini {
+  width: 60px; height: 96px;
+  background-color: #fffefa;
+  background-image: repeating-linear-gradient(180deg, rgba(0,0,0,0) 0 10px, #d9d2c4 10px 12px);
+  background-size: 44px 100%;
+  background-repeat: no-repeat;
+  background-position: 8px 14px;
+  -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50%/7px 100%;
+  mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50%/7px 100%;
+}
+
+/* 机の小物（何もない状態のときだけ） */
+.desk-decor { position: fixed; pointer-events: none; z-index: 0; }
+.desk-ring { width: 116px; height: 116px; left: -34px; top: 170px; border-radius: 50%; border: 6px solid rgba(70, 35, 12, .2); }
+.desk-ring::after { content: ''; position: absolute; inset: 7px; border-radius: 50%; border: 2px solid rgba(70, 35, 12, .12); }
+.desk-pencil { right: -24px; bottom: 120px; transform: rotate(-22deg); filter: drop-shadow(0 6px 6px rgba(20, 10, 3, .45)); display: flex; height: 12px; width: 190px; }
+.desk-pencil-tip { width: 26px; background: linear-gradient(90deg, #2b2b2b 0 7px, #e9cfa6 7px); clip-path: polygon(0 50%, 100% 0, 100% 100%); }
+.desk-pencil-body { flex: 1; background: linear-gradient(90deg, rgba(0,0,0,0) 0 70%, rgba(214,178,86,.9) 70% 71.5%, rgba(0,0,0,0) 71.5% 73%, rgba(214,178,86,.9) 73% 74.5%, rgba(0,0,0,0) 74.5%), linear-gradient(180deg, #3d7550, #2a5537 50%, #1c3a26); }
+.desk-pencil-end { width: 3px; background: linear-gradient(180deg, #e6c99c, #c9a574); border-radius: 0 2px 2px 0; }
+.desk-clip { left: 46px; bottom: 170px; transform: rotate(28deg); filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .4)); }
+.desk-empty, .desk-slip { z-index: 1; }
+
+.desk-slip {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  border: 2px dashed rgba(246, 239, 224, .8);
+  background: rgba(43, 27, 16, .45);
+  color: #f6efe0;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  cursor: pointer;
+}
+.desk-empty label.desk-btn:focus-visible, .desk-slip:focus-visible { outline: 3px solid #f6efe0; outline-offset: 2px; }
+
+/* ---- 一括記入のメモ帳 ---- */
+.desk-pad {
+  position: relative;
+  background: #fffaf0;
+  border-radius: 4px 4px 8px 8px;
+  padding: 24px 14px 14px;
+  margin-bottom: 26px;
+  transform: rotate(-.6deg);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 10px 18px rgba(25, 12, 3, .42);
+}
+.desk-pad::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 11px; background: #3a2516; border-radius: 4px 4px 0 0; }
+.desk-pad-title { font-size: 14px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 4px; }
+.desk-pad-title b { font-family: 'M PLUS 1 Code', monospace; color: var(--desk-red-text); font-size: 16px; }
+/* 反映ボタンの列幅を固定し、項目を選ぶ前後で左の欄の幅が変わらないようにする */
+.desk-pad-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 64px; gap: 8px; align-items: end; }
+.desk-pad-row #bulk-apply-btn { width: 100%; padding: 0; grid-column: 3; }
+.desk-pad-f { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.desk-pad-f label { font-size: 11px; color: var(--desk-ink-soft); font-weight: 500; }
+.desk-pad-sel {
+  height: 44px; width: 100%;
+  border: 1px solid #c9b99a; border-radius: 8px;
+  background: #fff;
+  font: inherit; font-size: 14px; color: var(--desk-ink);
+  padding: 0 10px;
+  outline: none;
+}
+.desk-pad-sel:focus { border-color: var(--desk-ink); }
+/* 標準の矢印は右端に寄りすぎるので、カード側と同じ形の矢印を少し内側に置く */
+select.desk-pad-sel {
+  -webkit-appearance: none; appearance: none;
+  padding-right: 32px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b5a45' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;
+  text-overflow: ellipsis;
+}
+
+/* ---- レシート1件（写真＋情報カード） ---- */
+body.desk-app #tab-add .receipt-row {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 10px 0 0;
+  margin-bottom: 26px;
+  gap: 0;
+  flex-direction: row;
+}
+body.desk-app #tab-add .receipt-row.is-flipped { flex-direction: row-reverse; }
+
+.desk-photo {
+  position: relative;
+  flex: 0 0 auto;
+  margin-top: 12px;
+  z-index: 1;
+}
+.desk-photo-paper {
+  background: #fdfcf8;
+  padding: 6px 6px 18px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 10px 14px rgba(25, 12, 3, .45);
+}
+.desk-photo img {
+  display: block;
+  width: 114px;
+  max-height: 230px;
+  object-fit: cover;
+  cursor: zoom-in;
+  background: #eee;
+}
+
+.desk-stamp {
+  position: absolute;
+  left: calc(50% - 29px);
+  bottom: -10px;
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  border: 2.5px solid var(--desk-red);
+  color: var(--desk-red);
+  background: rgba(255, 252, 245, .35);
+  font-family: 'Shippori Mincho B1', serif;
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1.05;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 2px rgba(184, 59, 40, .22);
+}
+.desk-stamp-pending { border-color: var(--desk-gray); color: var(--desk-gray); border-style: dashed; box-shadow: none; }
+.desk-stamp-running { border-color: var(--desk-blue); color: var(--desk-blue); box-shadow: inset 0 0 0 2px rgba(47, 91, 138, .2); }
+.desk-stamp-error { border-color: var(--desk-red-text); color: var(--desk-red-text); border-style: dashed; box-shadow: none; }
+
+.desk-card {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 300px;
+  margin-left: -12px;
+  background: #fffdf6;
+  border-radius: 3px;
+  padding: 8px 12px 6px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .18), 0 8px 16px rgba(25, 12, 3, .38);
+  z-index: 2;
+}
+body.desk-app #tab-add .receipt-row.is-flipped .desk-card { margin-left: 0; margin-right: -12px; }
+/* 選択を外した行は紙ごと少し沈ませる（透けると木目が混ざって読みにくいので opacity は使わない） */
+body.desk-app #tab-add .receipt-row:not(.is-selected) .desk-card,
+body.desk-app #tab-add .receipt-row:not(.is-selected) .desk-photo { filter: brightness(.88) saturate(.8); }
+
+.desk-clip-card { position: absolute; top: -14px; left: -6px; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .35)); }
+.receipt-row.is-flipped .desk-clip-card { left: auto; right: -6px; }
+
+.desk-card-top { display: flex; align-items: center; justify-content: space-between; height: 44px; margin: 0 -8px 2px; }
+.desk-chk { display: flex; align-items: center; gap: 7px; min-height: 44px; padding: 0 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.desk-chk input { width: 20px; height: 20px; accent-color: var(--desk-red); margin: 0; }
+.desk-status { font-size: 12px; font-weight: 700; }
+.desk-status-done, .desk-status-error { color: var(--desk-red-text); }
+.desk-status-running { color: var(--desk-blue); }
+.desk-status-pending { color: var(--desk-gray); }
+.desk-x-btn {
+  min-width: 44px; height: 44px;
+  border: 0; background: transparent;
+  color: #6f5f4a;
+  font: inherit; font-size: 12px;
+  display: flex; align-items: center; gap: 3px;
+  padding: 0 8px; border-radius: 8px;
+  cursor: pointer;
+}
+
+.desk-f {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 4px;
+  min-height: 36px;
+  border-bottom: 1px dashed #d8ccb4;
+  border-radius: 4px;
+}
+.desk-f > label { font-size: 11px; color: var(--desk-ink-soft); font-weight: 500; }
+.desk-f input, .desk-f select {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 16px;
+  color: var(--desk-ink);
+  padding: 0;
+  height: 32px;
+  outline: none;
+  border-radius: 0;
+}
+.desk-f input::placeholder { color: #7d6d58; }
+.desk-f input[type="date"] { -webkit-appearance: none; appearance: none; min-width: 0; text-align: left; padding-right: 8px; }
+.desk-f input[type="date"]::-webkit-date-and-time-value { text-align: left; }
+.desk-f select { -webkit-appearance: none; appearance: none; padding-right: 28px; }
+.desk-f-sel { position: relative; }
+.desk-f-sel svg { position: absolute; right: 8px; top: 10px; pointer-events: none; color: var(--desk-ink-soft); }
+.desk-f-amt { display: flex; align-items: center; gap: 2px; font-family: 'M PLUS 1 Code', monospace; font-weight: 700; }
+.desk-f-amt input { font-family: inherit; font-weight: inherit; }
+.desk-f-amt input::placeholder { font-weight: 400; }
+.desk-f:focus-within { border-bottom-color: var(--desk-ink); }
+
+/* 一括記入で対象になる欄を赤枠で示す */
+#add-list[data-bulk-field="store_name"] .receipt-row.is-selected .desk-f-store_name,
+#add-list[data-bulk-field="category"] .receipt-row.is-selected .desk-f-category,
+#add-list[data-bulk-field="payment_method"] .receipt-row.is-selected .desk-f-payment_method,
+#add-list[data-bulk-field="memo"] .receipt-row.is-selected .desk-f-memo {
+  box-shadow: 0 0 0 2px var(--desk-red) inset;
+  padding-left: 4px;
+}
+
+.desk-more-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-height: 36px; }
+.desk-more {
+  border: 0; background: transparent;
+  font: inherit; font-size: 12px; color: var(--desk-ink-soft);
+  height: 36px; padding: 0;
+  display: flex; gap: 3px; align-items: center;
+  margin-right: auto;
+  cursor: pointer;
+}
+.desk-more svg { transition: transform .15s; }
+.desk-more.is-open svg { transform: rotate(180deg); }
+.desk-chip { font-size: 11px; border: 1px solid #8a7860; border-radius: 4px; padding: 1px 6px; color: #4a3826; line-height: 1.5; }
+
+.desk-detail { padding: 6px 0 4px; display: flex; flex-direction: column; }
+.desk-detail .desk-radio-row,
+.desk-modal-card .desk-radio-row { display: grid; grid-template-columns: 60px minmax(0, 1fr); column-gap: 2px; align-items: center; min-height: 40px; border-bottom: 1px dashed #d8ccb4; }
+.desk-detail .desk-radio-row > span,
+.desk-modal-card .desk-radio-row > span { font-size: 11px; color: var(--desk-ink-soft); font-weight: 500; white-space: nowrap; }
+.desk-detail .radio-group,
+.desk-modal-card .radio-group { gap: 2px 12px; flex-wrap: nowrap; }
+.desk-detail .radio-label,
+.desk-modal-card .radio-label { font-size: 13px; min-height: 36px; gap: 4px; }
+.desk-detail .radio-label input[type="radio"],
+.desk-modal-card .radio-label input[type="radio"] { width: 16px; height: 16px; }
+.desk-detail .radio-label input,
+.desk-modal-card .radio-label input { accent-color: var(--desk-ink); }
+.desk-detail .error-msg { margin-top: 8px; font-size: 12px; }
+
+/* ---- 下部の操作バー ---- */
+body.desk-app #add-toolbar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  margin: 0;
+  top: auto;
+  z-index: 20;
+  background: #f4ecdc;
+  border-top: 1px solid #cdbb98;
+  border-bottom: 0;
+  box-shadow: 0 -6px 14px rgba(20, 10, 3, .22);
+  padding: 12px 14px calc(14px + env(safe-area-inset-bottom)) 18px;
+}
+body.desk-app #add-toolbar .add-toolbar-row { max-width: 568px; margin: 0 auto; gap: 8px; }
+body.desk-app #add-count-label {
+  flex: 1;
+  color: var(--desk-ink);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body.desk-app #add-count-label b { font-family: 'M PLUS 1 Code', monospace; font-size: 18px; font-weight: 700; margin-right: 2px; }
+
+/* ---- 一覧：検索欄 ---- */
+.desk-find {
+  display: flex; align-items: center; gap: 8px;
+  height: 48px; padding: 0 14px; margin-bottom: 18px;
+  background: #fffaf0; border-radius: 8px;
+  color: var(--desk-ink-soft);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 6px 12px rgba(25, 12, 3, .35);
+  cursor: text;
+}
+.desk-find:focus-within { box-shadow: 0 0 0 2px var(--desk-ink), 0 6px 12px rgba(25, 12, 3, .35); }
+.desk-find input {
+  flex: 1; min-width: 0; height: 44px;
+  border: 0; background: transparent; outline: none;
+  font: inherit; font-size: 16px; color: var(--desk-ink);
+  -webkit-appearance: none; appearance: none;
+}
+.desk-find input::placeholder { color: #7d6d58; }
+
+/* ---- 一覧：机の上の帳簿 ---- */
+.desk-ledger {
+  position: relative;
+  background: #fffdf6;
+  border-radius: 4px 4px 8px 8px;
+  padding: 12px 0 8px;
+  transform: rotate(-.4deg);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 10px 18px rgba(25, 12, 3, .42);
+}
+.desk-ledger::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 12px; background: #3a2516; border-radius: 4px 4px 0 0; }
+/* 帳簿の左の赤い二重線（日付の欄と本文の境目） */
+.desk-ledger::after {
+  content: ''; position: absolute; top: 12px; bottom: 0; left: 54px; width: 4px;
+  border-left: 1px solid rgba(184, 59, 40, .45);
+  border-right: 1px solid rgba(184, 59, 40, .45);
+  pointer-events: none;
+}
+.desk-ledger ul { list-style: none; margin: 0; padding: 0; }
+.desk-lg-month {
+  display: flex; align-items: baseline; gap: 6px;
+  margin: 0; padding: 14px 16px 6px 72px;
+  border-bottom: 1.5px solid var(--desk-ink);
+  font-size: 12px; font-weight: 500;
+}
+.desk-lg-m { font-family: 'Shippori Mincho B1', serif; font-weight: 800; font-size: 21px; }
+.desk-lg-y { font-family: 'M PLUS 1 Code', monospace; font-size: 12px; color: var(--desk-ink-soft); }
+.desk-lg-n { margin-left: auto; font-size: 12px; color: var(--desk-ink-soft); }
+.desk-lg-row {
+  width: 100%;
+  display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; align-items: center;
+  min-height: 58px; padding: 0 16px 0 0;
+  border: 0; border-bottom: 1px solid #e6dac3;
+  background: transparent;
+  font: inherit; text-align: left; color: var(--desk-ink);
+  cursor: pointer;
+}
+.desk-lg-row:hover { background: rgba(184, 59, 40, .05); }
+.desk-lg-row:focus-visible { outline: 2px solid var(--desk-ink); outline-offset: -2px; }
+.desk-lg-day { display: flex; flex-direction: column; align-items: center; line-height: 1.15; }
+.desk-lg-d { font-family: 'M PLUS 1 Code', monospace; font-weight: 700; font-size: 17px; }
+.desk-lg-w { font-size: 10px; color: var(--desk-ink-soft); }
+.desk-lg-main { padding-left: 14px; min-width: 0; }
+.desk-lg-store { display: block; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.desk-lg-store.is-none { color: #7d6d58; font-weight: 500; }
+.desk-lg-meta { display: flex; align-items: center; gap: 6px; margin-top: 3px; font-size: 11px; color: var(--desk-ink-soft); }
+.desk-lg-warn { color: var(--desk-red-text); }
+.desk-lg-q {
+  font-family: 'Shippori Mincho B1', serif; font-weight: 800; font-size: 10px; line-height: 1.5;
+  color: var(--desk-red-text); border: 1px solid var(--desk-red); border-radius: 3px; padding: 0 4px;
+}
+.desk-lg-q.is-no { color: var(--desk-gray); border-color: #8a929c; border-style: dashed; }
+.desk-lg-amt { font-family: 'M PLUS 1 Code', monospace; font-weight: 700; font-size: 15px; padding-left: 10px; white-space: nowrap; }
+
+.desk-ledger-empty {
+  margin: 24px 8px 0; padding: 28px 16px;
+  border-radius: 12px;
+  border: 2px dashed rgba(246, 239, 224, .8);
+  background: rgba(43, 27, 16, .45);
+  color: var(--desk-cream);
+  text-align: center; font-weight: 700;
+}
+
+/* ---- 一覧：下部の書き出しバー ---- */
+body.desk-app #list-toolbar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 20;
+  background: #f4ecdc;
+  border-top: 1px solid #cdbb98;
+  box-shadow: 0 -6px 14px rgba(20, 10, 3, .22);
+  padding: 10px 14px calc(14px + env(safe-area-inset-bottom)) 16px;
+}
+.list-toolbar-row, .list-toolbar-range { max-width: 568px; margin: 0 auto; display: flex; gap: 8px; }
+.list-toolbar-row { align-items: flex-end; }
+.list-toolbar-range { align-items: center; margin-bottom: 8px; color: var(--desk-ink-soft); }
+.list-toolbar-range input { flex: 1; min-width: 0; height: 40px; }
+.desk-per { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.desk-per label { font-size: 10px; color: var(--desk-ink-soft); font-weight: 500; }
+#list-toolbar .desk-btn { padding: 0 12px; font-size: 14px; gap: 5px; }
+.desk-csv-chev { transition: transform .15s; }
+#csv-export-toggle[aria-expanded="true"] .desk-csv-chev { transform: rotate(180deg); }
+.desk-csv-menu {
+  position: absolute; right: 0; bottom: calc(100% + 8px);
+  z-index: 21;
+  min-width: 240px;
+  display: flex; flex-direction: column;
+  padding: 6px;
+  background: #fffdf6; border-radius: 6px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 10px 20px rgba(25, 12, 3, .4);
+}
+.desk-csv-menu button {
+  min-height: 48px; padding: 6px 12px;
+  display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+  border: 0; border-radius: 4px; background: transparent;
+  font: inherit; font-size: 14px; font-weight: 700; color: var(--desk-ink); text-align: left;
+  cursor: pointer;
+}
+.desk-csv-menu button + button { border-top: 1px dashed #d8ccb4; border-radius: 0 0 4px 4px; }
+.desk-csv-menu button:hover { background: rgba(184, 59, 40, .06); }
+.desk-csv-menu small { font-size: 11px; font-weight: 500; color: var(--desk-ink-soft); }
+body.desk-app #image-export-progress { max-width: 568px; margin: 6px auto 0; font-size: 12px; color: var(--desk-ink-soft); text-align: right; }
+
+/* ---- 詳細：暗くした机の上に写真とカードを置く ---- */
+.desk-modal {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(18, 9, 3, .66);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.desk-modal-close {
+  position: fixed; top: calc(6px + env(safe-area-inset-top)); right: 8px; z-index: 2;
+  height: 44px; padding: 0 12px;
+  border: 0; border-radius: 8px;
+  background: rgba(43, 27, 16, .55); color: var(--desk-cream);
+  font: inherit; font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; gap: 5px;
+  cursor: pointer;
+}
+.desk-modal-inner { max-width: 420px; min-height: 100%; margin: 0 auto; padding: calc(62px + env(safe-area-inset-top)) 16px 120px; }
+.desk-modal-photo { position: relative; z-index: 1; display: flex; justify-content: center; margin-bottom: -26px; }
+.desk-modal-photo-btn {
+  position: relative;
+  border: 0; padding: 6px 6px 18px;
+  background: #fdfcf8;
+  transform: rotate(-3deg);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .25), 0 12px 18px rgba(0, 0, 0, .5);
+  cursor: zoom-in;
+}
+.desk-modal-photo-btn img { display: block; max-width: min(200px, 60vw); max-height: 300px; background: #eee; }
+.desk-modal-zoom {
+  position: absolute; right: -12px; bottom: 18px;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--desk-cream); color: var(--desk-ink);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .4);
+}
+.desk-modal-card {
+  position: relative; z-index: 2;
+  background: #fffdf6; border-radius: 3px;
+  padding: 18px 14px 8px;
+  transform: rotate(.5deg);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .18), 0 10px 20px rgba(0, 0, 0, .45);
+}
+.desk-modal-clip { position: absolute; top: -22px; left: 40%; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .35)); }
+/* インボイス・税率の行（ラベル60px）と欄の頭をそろえる */
+.desk-modal-card .desk-f { min-height: 42px; grid-template-columns: 60px minmax(0, 1fr); }
+.desk-modal-card .desk-f-last { border-bottom: 0; }
+.desk-modal-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 3;
+  background: #f4ecdc;
+  border-top: 1px solid #cdbb98;
+  box-shadow: 0 -6px 14px rgba(20, 10, 3, .3);
+  padding: 12px 14px calc(14px + env(safe-area-inset-bottom)) 16px;
+}
+.desk-modal-bar-row { max-width: 568px; margin: 0 auto; display: flex; align-items: center; gap: 8px; }
+.desk-btn-del { background: transparent; color: var(--desk-red-text); border: 1.5px dashed var(--desk-red); }
+.desk-modal-save { margin-left: auto; padding: 0 22px; }
+/* style.css の旧モーダル用ID指定（黒背景・幅100%・余白）を打ち消す */
+body.desk-app #modal-image-container { background: none; display: flex; }
+body.desk-app #modal-image-container.hidden { display: none; }
+body.desk-app #modal-image { width: auto; max-width: min(200px, 60vw); max-height: 300px; object-fit: contain; }
+body.desk-app #modal-form { margin: 0; }

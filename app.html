@@ -2,18 +2,19 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>receipt-desk</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=M+PLUS+1+Code:wght@400;700&family=Shippori+Mincho+B1:wght@800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/desk.css">
   <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
   </script>
   <script defer src="/_vercel/insights/script.js"></script>
 </head>
-<body>
+<body class="desk-app desk-mode">
 
   <header>
     <span class="logo">
@@ -49,97 +50,123 @@
 
   <!-- 追加タブ -->
   <section id="tab-add" class="tab-content">
-    <div class="upload-area" id="image-upload-area">
-      <input type="file" id="image-input" accept="image/*" multiple aria-label="レシート画像を撮影または選択">
-      <div class="upload-placeholder" id="upload-placeholder">
-        <svg class="upload-icon" width="64" height="64" viewBox="0 0 100 84" fill="none" aria-hidden="true">
-          <ellipse cx="50" cy="78" rx="34" ry="4" fill="var(--border)"/>
-          <rect x="8" y="26" width="84" height="50" rx="12" fill="var(--text)"/>
-          <rect x="30" y="14" width="26" height="14" rx="4" fill="var(--text)"/>
-          <rect x="14" y="34" width="14" height="10" rx="2" fill="var(--surface)"/>
-          <circle cx="80" cy="36" r="4" fill="var(--text-muted)"/>
-          <circle cx="50" cy="52" r="20" fill="var(--text)"/>
-          <circle cx="50" cy="52" r="14" fill="var(--surface)"/>
-          <circle cx="50" cy="52" r="8" fill="var(--text)"/>
-          <circle cx="45" cy="47" r="3" fill="var(--surface)" opacity="0.7"/>
-        </svg>
-        <p class="upload-hint">タップして撮影 / 写真を選択（複数選択可）</p>
+    <input type="file" id="image-input" class="desk-visually-hidden" accept="image/*" multiple aria-label="レシート画像を撮影または選択" tabindex="-1">
+
+    <!-- 何もない状態：机の上に追加の枠と小物 -->
+    <div id="add-empty" class="desk-empty">
+      <div class="desk-decor desk-ring" aria-hidden="true"></div>
+      <div class="desk-decor desk-pencil" aria-hidden="true"><div class="desk-pencil-tip"></div><div class="desk-pencil-body"></div><div class="desk-pencil-end"></div></div>
+      <svg class="desk-decor desk-clip" width="16" height="46" viewBox="0 0 16 46" fill="none" aria-hidden="true"><path d="M5 30V8a3.5 3.5 0 0 1 7 0v26a5.5 5.5 0 0 1-11 0V12" stroke="#a7afb6" stroke-width="2" stroke-linecap="round"/></svg>
+
+      <div class="desk-minis" aria-hidden="true">
+        <div class="desk-mini-wrap" style="left: 18px; top: 6px; transform: rotate(-10deg)"><div class="desk-mini"></div></div>
+        <div class="desk-mini-wrap" style="left: 72px; top: 0; transform: rotate(7deg)"><div class="desk-mini"></div></div>
       </div>
+      <h2>レシートを机に広げる</h2>
+      <label for="image-input" class="desk-btn desk-btn-stamp" role="button" tabindex="0">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        撮影・写真を選ぶ
+      </label>
+      <p class="desk-empty-note">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        写真の選択、読み取りはまとめて可能
+      </p>
     </div>
 
-    <div id="add-toolbar" class="add-toolbar hidden">
-      <div class="add-toolbar-row">
-        <span id="add-count-label"></span>
-        <button type="button" id="add-ocr-btn" class="btn-primary">OCR開始</button>
-        <button type="button" id="add-save-btn" class="btn-primary hidden">保存</button>
+    <!-- レシートがある状態：追加の細い枠 -->
+    <label for="image-input" id="add-slip" class="desk-slip hidden" role="button" tabindex="0">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      レシートを撮る・選ぶ
+    </label>
+
+    <!-- 2件以上選んだときの一括記入 -->
+    <section id="bulk-apply-row" class="desk-pad hidden" aria-label="一括記入">
+      <p class="desk-pad-title">選んだ<b id="bulk-count">0</b>件にまとめて記入</p>
+      <div class="desk-pad-row">
+        <div class="desk-pad-f">
+          <label for="bulk-apply-field">項目</label>
+          <select id="bulk-apply-field" class="desk-pad-sel">
+            <option value="">項目を選択</option>
+            <option value="store_name">店名・取引先</option>
+            <option value="category">勘定科目</option>
+            <option value="payment_method">取引手段</option>
+            <option value="memo">摘要</option>
+          </select>
+        </div>
+        <div class="desk-pad-f hidden" id="bulk-value-wrap">
+          <label for="bulk-apply-value-select" id="bulk-value-label">記入する値</label>
+          <select id="bulk-apply-value-select" class="desk-pad-sel hidden"></select>
+          <input type="text" id="bulk-apply-value-text" class="desk-pad-sel hidden" placeholder="空欄で反映も可">
+        </div>
+        <button type="button" id="bulk-apply-btn" class="desk-btn desk-btn-ink hidden">反映</button>
       </div>
-      <div id="bulk-apply-row" class="bulk-apply-row hidden">
-        <select id="bulk-apply-field">
-          <option value="">一括設定 ▼</option>
-          <option value="store_name">店名・取引先</option>
-          <option value="category">勘定科目</option>
-          <option value="payment_method">取引手段</option>
-          <option value="memo">摘要</option>
-        </select>
-        <select id="bulk-apply-value-select" class="hidden"></select>
-        <input type="text" id="bulk-apply-value-text" class="hidden" placeholder="値を入力（空欄で反映も可）">
-        <button type="button" id="bulk-apply-btn" class="btn-ghost hidden">反映</button>
-      </div>
-    </div>
+    </section>
 
     <div id="add-list"></div>
+
+    <!-- 下部の操作バー -->
+    <div id="add-toolbar" class="hidden">
+      <div class="add-toolbar-row">
+        <span id="add-count-label"></span>
+        <button type="button" id="add-ocr-btn" class="desk-btn desk-btn-paper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          読み取る
+        </button>
+        <button type="button" id="add-save-btn" class="desk-btn desk-btn-stamp hidden">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+          保存
+        </button>
+      </div>
+    </div>
   </section>
 
-  <!-- 一覧タブ -->
+  <!-- 一覧タブ（机の上の帳簿） -->
   <section id="tab-list" class="tab-content hidden">
-    <div class="list-toolbar">
-    <div class="search-bar">
-      <input type="search" id="search-input" placeholder="店名・メモで検索">
-    </div>
-    <div class="csv-bar">
-      <div class="csv-bar-row">
-        <select id="csv-range-select">
-          <option value="all">すべての期間</option>
-          <option value="month">今月</option>
-          <option value="quarter">今四半期</option>
-          <option value="year">今年</option>
-          <option value="custom">期間を指定</option>
-        </select>
-        <input type="date" id="csv-range-start" class="hidden">
-        <span id="csv-range-tilde" class="hidden">〜</span>
-        <input type="date" id="csv-range-end" class="hidden">
+    <label class="desk-find">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <span class="desk-visually-hidden">検索</span>
+      <input type="search" id="search-input" placeholder="店名・摘要で探す">
+    </label>
+
+    <section id="receipt-list" class="desk-ledger hidden" aria-label="保存したレシート"></section>
+    <p id="empty-state" class="desk-ledger-empty hidden">レシートがありません</p>
+
+    <!-- 下部の書き出しバー -->
+    <div id="list-toolbar">
+      <div id="csv-range-custom" class="list-toolbar-range hidden">
+        <input type="date" id="csv-range-start" class="desk-pad-sel" aria-label="開始日">
+        <span aria-hidden="true">〜</span>
+        <input type="date" id="csv-range-end" class="desk-pad-sel" aria-label="終了日">
       </div>
-      <div class="csv-bar-row">
-        <button id="export-images-btn" class="btn-ghost">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="2" y="2" width="13" height="13" rx="2"/>
-            <rect x="7" y="7" width="13" height="13" rx="2" fill="var(--bg)"/>
-            <path d="M18 12v6M15.5 15.5 18 18l2.5-2.5" stroke-width="1.6"/>
-          </svg>
-          画像一括DL
+      <div class="list-toolbar-row">
+        <div class="desk-per">
+          <label for="csv-range-select">書き出す期間</label>
+          <select id="csv-range-select" class="desk-pad-sel">
+            <option value="all">すべての期間</option>
+            <option value="month">今月</option>
+            <option value="quarter">今四半期</option>
+            <option value="year">今年</option>
+            <option value="custom">期間を指定</option>
+          </select>
+        </div>
+        <button type="button" id="export-images-btn" class="desk-btn desk-btn-paper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>
+          画像ZIP
         </button>
         <div class="csv-export">
-          <button id="csv-export-toggle" class="btn-ghost">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect x="2" y="3" width="16" height="14" rx="2"/>
-              <line x1="2" y1="8" x2="18" y2="8"/>
-              <line x1="2" y1="13" x2="18" y2="13"/>
-              <line x1="8" y1="3" x2="8" y2="17"/>
-              <path d="M20 10v8M17.5 15.5 20 18l2.5-2.5" stroke-width="1.6"/>
-            </svg>
+          <button type="button" id="csv-export-toggle" class="desk-btn desk-btn-stamp" aria-haspopup="true" aria-expanded="false" aria-controls="csv-export-menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg>
             CSV
+            <svg class="desk-csv-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>
           </button>
-          <div id="csv-export-menu" class="csv-export-menu hidden">
-            <button id="export-csv-btn" class="btn-ghost">汎用形式</button>
-            <button id="export-csv-yayoi-btn" class="btn-ghost">弥生形式（やよいの青色申告 オンライン）</button>
+          <div id="csv-export-menu" class="desk-csv-menu hidden">
+            <button type="button" id="export-csv-btn">汎用形式</button>
+            <button type="button" id="export-csv-yayoi-btn">弥生形式<small>やよいの青色申告 オンライン</small></button>
           </div>
         </div>
-        <span id="image-export-progress" class="hidden"></span>
       </div>
+      <p id="image-export-progress" class="hidden" role="status"></p>
     </div>
-    </div>
-    <div id="receipt-list"></div>
-    <p id="empty-state" class="empty-state hidden">レシートがありません</p>
   </section>
 
   <!-- 画像プレビュー -->
@@ -147,46 +174,37 @@
     <img id="lightbox-image" src="" alt="レシート拡大画像">
   </div>
 
-  <!-- 詳細モーダル -->
-  <div id="modal-overlay" class="modal-overlay hidden">
-    <div id="modal" class="modal">
-      <div class="modal-body">
-      <div id="modal-image-container">
-        <img id="modal-image" src="" alt="レシート">
+  <!-- 詳細モーダル（机の上に写真とカードを置く） -->
+  <div id="modal-overlay" class="desk-modal hidden" role="dialog" aria-modal="true" aria-label="レシートの詳細">
+    <button type="button" id="modal-close" class="desk-modal-close">
+      閉じる
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div id="modal" class="desk-modal-inner">
+      <div id="modal-image-container" class="desk-modal-photo">
+        <button type="button" id="modal-image-btn" class="desk-modal-photo-btn" aria-label="レシート写真を拡大">
+          <img id="modal-image" src="" alt="">
+          <span class="desk-modal-zoom" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M11 8v6M8 11h6"/></svg></span>
+        </button>
       </div>
 
-      <form id="modal-form" class="receipt-form">
-        <div class="form-row">
-          <div class="form-group">
-            <label>日付</label>
-            <input type="date" id="modal-date">
-          </div>
-          <div class="form-group">
-            <label>金額（円）</label>
-            <input type="number" id="modal-amount" min="0">
-          </div>
+      <form id="modal-form" class="desk-modal-card">
+        <svg class="desk-modal-clip" width="18" height="52" viewBox="0 0 16 46" fill="none" aria-hidden="true"><path d="M5 30V8a3.5 3.5 0 0 1 7 0v26a5.5 5.5 0 0 1-11 0V12" stroke="#a7afb6" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="desk-f">
+          <label for="modal-date">日付</label>
+          <input type="date" id="modal-date">
         </div>
-        <div class="form-group">
-          <label>店名・取引先</label>
-          <input type="text" id="modal-store">
+        <div class="desk-f">
+          <label for="modal-store">店名</label>
+          <input type="text" id="modal-store" placeholder="店名・取引先">
         </div>
-        <div class="form-group">
-          <label>適格請求書（インボイス）</label>
-          <div class="segmented" data-name="modal_qualified">
-            <button type="button" class="segmented-option" data-value="true">適格</button>
-            <button type="button" class="segmented-option" data-value="false">非適格</button>
-          </div>
+        <div class="desk-f">
+          <label for="modal-amount">金額</label>
+          <div class="desk-f-amt"><span aria-hidden="true">¥</span><input type="number" id="modal-amount" min="0" inputmode="numeric" placeholder="0"></div>
         </div>
-        <div class="form-group">
-          <label>消費税率</label>
-          <div class="segmented" data-name="modal_tax_rate">
-            <button type="button" class="segmented-option" data-value="10">10%</button>
-            <button type="button" class="segmented-option" data-value="8">8%（軽減税率）</button>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>勘定科目</label>
+        <div class="desk-f">
+          <label for="modal-category">勘定科目</label>
+          <div class="desk-f-sel">
             <select id="modal-category">
               <option value="">未選択</option>
               <option value="会議費">会議費</option>
@@ -198,38 +216,48 @@
               <option value="広告宣伝費">広告宣伝費</option>
               <option value="その他">その他</option>
             </select>
-          </div>
-          <div class="form-group">
-            <label>取引手段</label>
-            <input type="text" id="modal-payment-method" placeholder="例：現金、事業用カード">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
           </div>
         </div>
-        <div class="form-group">
-          <label>摘要</label>
-          <input type="text" id="modal-memo">
+        <div class="desk-radio-row">
+          <span>インボイス</span>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="modal_qualified" value="true"> 適格</label>
+            <label class="radio-label"><input type="radio" name="modal_qualified" value="false"> 非適格</label>
+          </div>
+        </div>
+        <div class="desk-radio-row">
+          <span>税率</span>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="modal_tax_rate" value="10"> 10%</label>
+            <label class="radio-label"><input type="radio" name="modal_tax_rate" value="8"> 8%軽減</label>
+          </div>
+        </div>
+        <div class="desk-f">
+          <label for="modal-payment-method">取引手段</label>
+          <input type="text" id="modal-payment-method" placeholder="現金、事業用カードなど">
+        </div>
+        <div class="desk-f desk-f-last">
+          <label for="modal-memo">摘要</label>
+          <input type="text" id="modal-memo" placeholder="任意">
         </div>
       </form>
-      </div>
+    </div>
 
-      <div class="modal-footer">
-        <button id="modal-close" class="btn-ghost icon-btn" aria-label="閉じる">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
+    <div class="desk-modal-bar">
+      <div class="desk-modal-bar-row">
+        <button type="button" id="delete-btn" class="desk-btn desk-btn-del">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+          削除
         </button>
-        <button type="submit" form="modal-form" class="btn-primary">更新する</button>
-        <div class="modal-actions">
-          <button id="download-btn" class="btn-ghost icon-btn" aria-label="画像DL">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-          </button>
-          <button id="delete-btn" class="btn-danger icon-btn" aria-label="削除">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-            </svg>
-          </button>
-        </div>
+        <button type="button" id="download-btn" class="desk-btn desk-btn-paper">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          画像
+        </button>
+        <button type="submit" form="modal-form" class="desk-btn desk-btn-stamp desk-modal-save">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+          更新
+        </button>
       </div>
     </div>
   </div>
