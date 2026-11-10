@@ -4,23 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-site-verification" content="Ke25TVapPSI2qt5s3O5QKgvA1nQoQyQpE63CNkS_tdY" />
-  <title>receipt-desk | レシートの証憑保管庫</title>
-  <meta name="description" content="スマホで撮るだけ、AIが自動で日付・店名・金額を読み取り。フリーランス・個人事業主のためのレシート管理・証憑保管サービス。インストール不要、無料で始められます。">
+  <title>receipt-desk | レシート・領収書をまとめて整理する経費の記録アプリ</title>
+  <meta name="description" content="撮りためたレシート・領収書を一括で読み取り、まとめて記入。経費の記録と証憑の保管を一か所に。画像はZIP、内容はCSVで、どの会計ソフトにも持っていける。個人事業主・フリーランス向け、無料で始められます。">
 
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://receipt-desk-one.vercel.app/">
   <meta property="og:site_name" content="receipt-desk">
-  <meta property="og:title" content="receipt-desk | レシートの証憑保管庫">
-  <meta property="og:description" content="スマホで撮るだけ、AIが自動で日付・店名・金額を読み取り。フリーランス・個人事業主のためのレシート管理・証憑保管サービス。インストール不要、無料で始められます。">
-  <meta property="og:image" content="https://receipt-desk-one.vercel.app/assets/screenshots/og-image-v2.png">
+  <meta property="og:title" content="写真フォルダと会計ソフトの間に、レシートの机を。| receipt-desk">
+  <meta property="og:description" content="撮りためたレシートを広げて、まとめて読み取り、まとめて記入。画像はZIP、内容はCSVで、どの会計ソフトにも持っていける。">
+  <meta property="og:image" content="https://receipt-desk-one.vercel.app/assets/screenshots/og-image-v3.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="receipt-desk | レシートの証憑保管庫">
-  <meta name="twitter:description" content="スマホで撮るだけ、AIが自動で日付・店名・金額を読み取り。フリーランス・個人事業主のためのレシート管理・証憑保管サービス。">
-  <meta name="twitter:image" content="https://receipt-desk-one.vercel.app/assets/screenshots/og-image-v2.png">
+  <meta name="twitter:title" content="写真フォルダと会計ソフトの間に、レシートの机を。| receipt-desk">
+  <meta name="twitter:description" content="撮りためたレシートを広げて、まとめて読み取り、まとめて記入。画像はZIP、内容はCSVで、どの会計ソフトにも持っていける。">
+  <meta name="twitter:image" content="https://receipt-desk-one.vercel.app/assets/screenshots/og-image-v3.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=M+PLUS+1+Code:wght@400;700&family=Shippori+Mincho+B1:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/landing.css">
   <script>
@@ -28,7 +28,7 @@
   </script>
   <script defer src="/_vercel/insights/script.js"></script>
 </head>
-<body>
+<body class="lp">
 
   <header class="lp-header">
     <span class="logo">
@@ -42,166 +42,199 @@
     <a href="login.html" class="lp-header-cta" id="lp-header-cta">ログイン / 新規登録</a>
   </header>
 
-  <!-- Hero -->
-  <section class="lp-hero">
-    <p class="lp-hero-eyebrow">レシートの証憑保管庫</p>
-    <h1>確定申告の"証拠"がいつでも出せる状態になる。</h1>
-    <p>レシート・領収書をスマホで撮って保存するだけ。日付・店名・金額はAIが自動で読み取ります。会計ソフトへの手打ち転記も、写真フォルダを漁る手間もなくなります。月末にまとめて一括で処理することもできます。</p>
-    <a href="login.html" class="lp-cta-btn">無料で始める</a>
-    <p class="lp-cta-note">インストール不要・Webで完結 / 現在は無料プランのみ（月30件まで）</p>
-  </section>
+  <main>
+    <!-- ファーストビュー（木目の机） -->
+    <section class="lp-hero lp-wood">
+      <div class="lp-hero-inner">
+        <div class="lp-hero-text">
+          <p class="lp-eyebrow">レシート・領収書の整理と、経費の記録に</p>
+          <h1>写真フォルダと<br class="lp-br-sp">会計ソフトの間に、<br>レシートの机を。</h1>
+          <p class="lp-lead">撮りためたレシートを広げて、まとめて読み取り、まとめて記入。画像はZIP、内容はCSVで、どの会計ソフトにも持っていける。</p>
+          <a href="login.html" class="lp-btn lp-btn-stamp">無料で始める</a>
+          <p class="lp-note"><span>ブラウザだけで使える</span><span>今は無料プランのみ（AI読み取り 月30件まで）</span></p>
+        </div>
+        <figure class="lp-hero-shot">
+          <svg class="lp-clip" width="18" height="52" viewBox="0 0 16 46" fill="none" aria-hidden="true"><path d="M5 30V8a3.5 3.5 0 0 1 7 0v26a5.5 5.5 0 0 1-11 0V12" stroke="#a7afb6" stroke-width="2" stroke-linecap="round"/></svg>
+          <img src="assets/screenshots/desk-add.jpg" alt="追加画面。木目の机にレシート写真と記入欄のカードが並び、読み取りの状態がはんこで表示されている" width="1170" height="2532">
+        </figure>
+      </div>
+    </section>
 
-  <!-- 課題 -->
-  <section class="lp-section">
-    <div class="lp-container">
-      <h2>こんな手間、ありませんか？</h2>
-      <div class="lp-pain-grid">
-        <div class="lp-card">
-          <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-          <h3>写真フォルダに埋もれる</h3>
-          <p>レシート写真が一般の写真フォルダに混ざり、容量も圧迫。あとで探すのが大変。</p>
-        </div>
-        <div class="lp-card">
-          <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          <h3>会計ソフトへの二度打ち</h3>
-          <p>写真を見ながら、日付や金額を会計ソフトに手入力。同じ情報を2回書く手間。</p>
-        </div>
-        <div class="lp-card">
-          <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          <h3>月末にまとめて処理したい</h3>
-          <p>1件ずつ丁寧に入力する設計のアプリが多く、まとめて処理したい実態に合わない。</p>
-        </div>
-        <div class="lp-card">
-          <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4.5 8-11V5l-8-3-8 3v6c0 6.5 8 11 8 11z"/></svg>
-          <h3>証憑の保管義務が不安</h3>
-          <p>原則7年の保存義務。紙のまま・スマホの写真だけでは、いざという時に探せない。</p>
+    <!-- なぜ別のアプリか -->
+    <section class="lp-section lp-paper">
+      <div class="lp-container">
+        <h2>会計ソフトにも<br class="lp-br-sp">撮影機能があるのに、<br>なぜ別のアプリ？</h2>
+        <div class="lp-why-grid">
+          <div class="lp-index-card">
+            <span class="lp-num" aria-hidden="true">一</span>
+            <h3>束のまま、まとめて片付ける</h3>
+            <p>会計ソフトの撮影機能は、1枚ずつ取引として登録する作りが多い。receipt-deskは撮りためた束を一度に広げて、読み取りも記入もまとめて済ませる。</p>
+          </div>
+          <div class="lp-index-card">
+            <span class="lp-num" aria-hidden="true">二</span>
+            <h3>どの会計ソフトにも持っていける</h3>
+            <p>画像はZIP、内容はCSVで書き出せる。会計ソフトを乗り換えても、まだ使っていなくても、証憑は手元に残る。</p>
+          </div>
+          <div class="lp-index-card">
+            <span class="lp-num" aria-hidden="true">三</span>
+            <h3>記録と保管だけに絞った</h3>
+            <p>仕訳や決算の機能はない。レシートの日付・店名・金額・勘定科目を記録して保管する。それだけだから迷わない。</p>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- スクリーンショット -->
-  <section class="lp-section">
-    <div class="lp-container">
-      <h2>実際の画面</h2>
-      <div class="lp-screenshot-scroll">
-        <div class="lp-screenshot-card">
-          <figure>
-            <div class="lp-shot-frame">
-              <img src="assets/screenshots/screenshot-list.png" alt="レシート一覧画面のスクリーンショット" loading="lazy" width="1206" height="2210">
-            </div>
-            <figcaption>一覧画面。日付・店名・金額・勘定科目がひと目で確認できます</figcaption>
-          </figure>
-        </div>
-        <div class="lp-screenshot-card">
-          <figure>
-            <div class="lp-shot-frame">
-              <img src="assets/screenshots/screenshot-detail.png" alt="レシート詳細画面のスクリーンショット" loading="lazy" width="1206" height="2210">
-            </div>
-            <figcaption>詳細画面。内容の確認・編集がその場でできます</figcaption>
-          </figure>
-        </div>
-        <div class="lp-screenshot-card">
-          <figure>
-            <div class="lp-shot-frame">
-              <img src="assets/screenshots/screenshot-add.png" alt="レシート追加画面のスクリーンショット。AIが日付・店名・金額を自動入力している" loading="lazy" width="1206" height="2210">
-            </div>
-            <figcaption>追加画面。AIが自動で日付・店名・金額などを読み取ります</figcaption>
-          </figure>
-        </div>
-        <div class="lp-screenshot-card">
-          <figure>
-            <div class="lp-shot-frame">
-              <img src="assets/screenshots/screenshot-bulk.png" alt="複数のレシートを選択して勘定科目を一括設定しているスクリーンショット" loading="lazy" width="1206" height="2210">
-            </div>
-            <figcaption>一括設定。複数選択して勘定科目などをまとめて反映できます</figcaption>
-          </figure>
-        </div>
-        <div class="lp-screenshot-card">
-          <figure>
-            <div class="lp-shot-frame">
-              <img src="assets/screenshots/screenshot-csv.png" alt="CSVエクスポートされたデータのスクリーンショット" loading="lazy" width="1240" height="200">
-            </div>
-            <figcaption>CSVエクスポート。確定申告時の取引データとして使えます</figcaption>
-          </figure>
-        </div>
+    <!-- 使い方 -->
+    <section class="lp-section lp-paper lp-paper-alt">
+      <div class="lp-container">
+        <h2>使い方</h2>
+        <p class="lp-section-lead">月末に溜まったレシートも、5つの手順で片付く。</p>
       </div>
-      <p class="lp-screenshot-hint">← 横にスワイプするとほかの画面も見られます →</p>
-      <p class="lp-pricing-note">※ 画面はサンプルデータです</p>
-    </div>
-  </section>
+      <ol class="lp-steps" aria-label="使い方の手順">
+        <li class="lp-step">
+          <figure>
+            <button type="button" class="lp-shot" aria-label="追加画面のスクリーンショットを拡大">
+              <img src="assets/screenshots/desk-add.jpg" alt="追加画面。読み取り済み・読み取り中・未読取のレシートが並んでいる" loading="lazy" width="1170" height="2532">
+            </button>
+            <figcaption>
+              <span class="lp-step-no">1</span>
+              <strong>広げて、読み取る</strong>
+              撮影するか、写真から何枚でもまとめて選ぶ。「読み取る」を押すと、AIが日付・店名・金額などを順に読み取る。
+            </figcaption>
+          </figure>
+        </li>
+        <li class="lp-step">
+          <figure>
+            <button type="button" class="lp-shot" aria-label="一括記入のスクリーンショットを拡大">
+              <img src="assets/screenshots/desk-bulk.jpg" alt="選んだ2件に勘定科目をまとめて記入している画面。対象の欄が赤枠で示されている" loading="lazy" width="1170" height="2532">
+            </button>
+            <figcaption>
+              <span class="lp-step-no">2</span>
+              <strong>まとめて記入して、保存</strong>
+              選んだレシートに、勘定科目や取引手段を一度に記入。書き換わる欄は赤枠で分かる。
+            </figcaption>
+          </figure>
+        </li>
+        <li class="lp-step">
+          <figure>
+            <button type="button" class="lp-shot" aria-label="一覧画面のスクリーンショットを拡大">
+              <img src="assets/screenshots/desk-list.jpg" alt="月ごとに区切られた帳簿風の一覧画面" loading="lazy" width="1170" height="2532">
+            </button>
+            <figcaption>
+              <span class="lp-step-no">3</span>
+              <strong>帳簿で見返す</strong>
+              保存したレシートは月ごとの帳簿に並ぶ。勘定科目が空のものは赤字で目立つ。
+            </figcaption>
+          </figure>
+        </li>
+        <li class="lp-step">
+          <figure>
+            <button type="button" class="lp-shot" aria-label="詳細画面のスクリーンショットを拡大">
+              <img src="assets/screenshots/desk-detail.jpg" alt="レシート写真と記入内容のカードを重ねた詳細画面" loading="lazy" width="1170" height="2532">
+            </button>
+            <figcaption>
+              <span class="lp-step-no">4</span>
+              <strong>写真を見ながら直す</strong>
+              行を押すと、写真と記入内容が開く。写真は押すと拡大できる。
+            </figcaption>
+          </figure>
+        </li>
+        <li class="lp-step">
+          <figure>
+            <button type="button" class="lp-shot" aria-label="書き出し画面のスクリーンショットを拡大">
+              <img src="assets/screenshots/desk-export.jpg" alt="書き出す期間を選び、CSVの形式を選んでいる画面" loading="lazy" width="1170" height="2532">
+            </button>
+            <figcaption>
+              <span class="lp-step-no">5</span>
+              <strong>書き出す</strong>
+              期間を選んで、画像はZIP、内容はCSVでダウンロード。
+            </figcaption>
+          </figure>
+        </li>
+      </ol>
+      <p class="lp-hint">横にスワイプすると続きが見られる ／ 画面はサンプルデータ</p>
+    </section>
 
-  <!-- 機能 -->
-  <section class="lp-section">
-    <div class="lp-container">
-      <h2>receipt-deskができること</h2>
-      <div class="lp-feature-grid">
-        <div class="lp-card">
-          <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          <h3>AIによる自動読み取り</h3>
-          <p>日付・店名・金額・支払い方法・消費税率まで、撮影するだけでAIが自動入力します。</p>
+    <!-- ZIPで全部取り出せる（木目の机） -->
+    <section class="lp-section lp-wood lp-export">
+      <div class="lp-container">
+        <h2>証憑は、<br class="lp-br-sp">いつでも全部持ち出せる。</h2>
+        <p class="lp-section-lead">個人で運営しているサービスに税務の証憑を預けるのは、不安があって当然。だから出口を先に用意した。</p>
+        <div class="lp-slip-grid">
+          <div class="lp-slip">
+            <svg class="lp-slip-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>
+            <h3>画像はZIPでまとめて</h3>
+            <p>期間を選んで、レシート画像を1つのZIPに。ファイル名には日付と店名が入る。</p>
+          </div>
+          <div class="lp-slip">
+            <svg class="lp-slip-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg>
+            <h3>内容はCSVで</h3>
+            <p>汎用形式と、弥生形式（やよいの青色申告 オンライン）。会計ソフトへの取り込みや、確定申告の資料に。</p>
+          </div>
+          <div class="lp-slip">
+            <svg class="lp-slip-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            <h3>退会すれば全部消える</h3>
+            <p>アカウントを削除すると、レシートの記録も画像もすべて削除される。</p>
+          </div>
         </div>
-        <div class="lp-card">
-          <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
-          <h3>インボイス自動判定</h3>
-          <p>適格請求書（インボイス）かどうかを、登録番号の記載から自動で判定します。</p>
-        </div>
-        <div class="lp-card">
-          <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
-          <h3>CSV・画像を一括エクスポート</h3>
-          <p>取引データはCSVで、レシート画像はZIPでいつでも書き出し可能。確定申告時の取引データとして使えます。</p>
-        </div>
-        <div class="lp-card">
-          <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          <h3>複数選択→一括設定</h3>
-          <p>複数のレシートをまとめて選択し、勘定科目などを一括で反映。月末のまとめ処理に対応。</p>
-        </div>
-        <div class="lp-card">
-          <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          <h3>会計ソフトに依存しない</h3>
-          <p>特定の会計ソフトの契約に縛られず、乗り換え・解約後もあなた自身の証憑として残ります。</p>
-        </div>
-        <div class="lp-card">
-          <svg class="lp-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>
-          <h3>インストール不要</h3>
-          <p>スマホでもPCでも、ブラウザだけで完結。アプリのダウンロードは不要です。</p>
-        </div>
+        <figure class="lp-csv">
+          <button type="button" class="lp-shot lp-shot-wide" aria-label="CSVのサンプルを拡大">
+            <img src="assets/screenshots/screenshot-csv.png" alt="書き出したCSVを表計算ソフトで開いた例" loading="lazy" width="1240" height="200">
+          </button>
+          <figcaption>書き出したCSVを表計算ソフトで開いた例</figcaption>
+        </figure>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- 料金 -->
-  <section class="lp-section">
-    <div class="lp-container">
-      <h2>料金</h2>
-      <div class="lp-pricing-card">
-        <p class="lp-price-label">現在ご利用いただけるプラン</p>
-        <p class="lp-price">無料</p>
-        <p class="lp-price-detail">OCR自動読み取り 月30件まで</p>
-        <ul>
-          <li>レシート・画像の保管件数は無制限</li>
-          <li>CSV・画像の一括エクスポート</li>
-          <li>複数選択での一括設定</li>
+    <!-- できること -->
+    <section class="lp-section lp-paper">
+      <div class="lp-container">
+        <h2>receipt-deskでできること</h2>
+        <ul class="lp-feature-list">
+          <li><strong>AIの自動読み取り</strong>日付・店名・金額・支払い方法・消費税率を読み取る。勘定科目は自分で選ぶ。</li>
+          <li><strong>インボイスの判定</strong>登録番号の記載から、適格請求書かどうかを判定する。</li>
+          <li><strong>複数選んでまとめて記入</strong>店名・勘定科目・取引手段・摘要を、選んだレシートに一度に反映。</li>
+          <li><strong>月ごとの帳簿と検索</strong>店名や摘要で探せる。空欄が残っているものもすぐ分かる。</li>
+          <li><strong>画像だけの保管にも</strong>記帳は済んでいて、証憑として残したいだけのレシートも、日付なしで保存できる。</li>
+          <li><strong>スマホでもPCでも</strong>アプリのインストールは不要。ブラウザで開くだけ。</li>
         </ul>
       </div>
-      <p class="lp-pricing-note">上限拡張などの有料プランは準備中です。</p>
-    </div>
-  </section>
+    </section>
 
-  <!-- 信頼性 -->
-  <section class="lp-section">
-    <div class="lp-container">
-      <h2>データの取り扱いについて</h2>
-      <p class="lp-trust">
-        個人が開発・運営しているサービスです。レシート画像はAI企業のAnthropic社に送信され、日付・店名・金額などを自動で読み取ります。保存データは日本国内のサーバーで管理し、アカウント削除でレシート・画像を含め全データを完全に削除できます。詳しくは<a href="privacy.html">プライバシーポリシー</a>をご覧ください。
-      </p>
-    </div>
-  </section>
-  <!-- 最終CTA -->
-  <section class="lp-final-cta">
-    <p>今月の証憑整理、まだ手つかずになっていませんか。</p>
-    <a href="login.html" class="lp-cta-btn">無料で始める</a>
-  </section>
+    <!-- 料金 -->
+    <section class="lp-section lp-paper lp-paper-alt">
+      <div class="lp-container">
+        <h2>料金</h2>
+        <div class="lp-price-card">
+          <p class="lp-price-label">今使えるプラン</p>
+          <p class="lp-price">無料</p>
+          <p class="lp-price-detail">AI読み取り 月30件まで</p>
+          <ul>
+            <li>レシート・画像の保管件数は無制限</li>
+            <li>画像ZIP・CSVの書き出し</li>
+            <li>複数選んでまとめて記入</li>
+          </ul>
+        </div>
+        <p class="lp-small">上限を広げる有料プランは準備中。</p>
+      </div>
+    </section>
+
+    <!-- データの取り扱い -->
+    <section class="lp-section lp-paper">
+      <div class="lp-container">
+        <h2>データの取り扱い</h2>
+        <p class="lp-trust">
+          個人が開発・運営しているサービス。レシート画像はAI企業のAnthropic社に送信され、日付・店名・金額などを読み取る。保存データは日本国内のサーバーで管理し、アカウントを削除するとレシート・画像を含む全データを完全に削除する。詳しくは<a href="privacy.html">プライバシーポリシー</a>へ。
+        </p>
+      </div>
+    </section>
+
+    <!-- 最終CTA（木目の机） -->
+    <section class="lp-final lp-wood">
+      <p>溜まったレシート、<br class="lp-br-sp">机に広げて片付けよう。</p>
+      <a href="login.html" class="lp-btn lp-btn-stamp">無料で始める</a>
+    </section>
+  </main>
 
   <footer class="lp-footer">
     receipt-desk — <a href="privacy.html">プライバシーポリシー</a> · <a href="https://github.com/ksmshkt/receipt-desk" target="_blank" rel="noopener">GitHub</a>

@@ -531,7 +531,7 @@ body.desk-app #image-export-progress { max-width: 568px; margin: 6px auto 0; fon
   position: fixed; top: calc(6px + env(safe-area-inset-top)); right: 8px; z-index: 2;
   height: 44px; padding: 0 12px;
   border: 0; border-radius: 8px;
-  background: rgba(43, 27, 16, .55); color: var(--desk-cream);
+  background: #24170d; color: var(--desk-cream);
   font: inherit; font-size: 14px; font-weight: 700;
   display: flex; align-items: center; gap: 5px;
   cursor: pointer;

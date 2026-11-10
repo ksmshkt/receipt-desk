@@ -8,9 +8,9 @@ client.auth.getSession().then(({ data: { session } }) => {
 });
 
 // Tap/click a screenshot to view it full-size (reuses app.html's lightbox pattern/styles).
-document.querySelectorAll('.lp-screenshot-card img').forEach(img => {
-  img.addEventListener('click', () => {
-    document.getElementById('lightbox-image').src = img.src;
+document.querySelectorAll('.lp-shot').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.getElementById('lightbox-image').src = btn.querySelector('img').src;
     document.getElementById('image-lightbox').classList.remove('hidden');
   });
 });
