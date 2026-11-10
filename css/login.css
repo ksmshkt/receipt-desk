@@ -1,0 +1,158 @@
+/*
+ * ログイン画面（login.html）専用。アプリ・LPの木目の机のデザインに合わせる。
+ * style.css の .auth-* / .logo などの旧スタイルは body.login-page 配下で上書きする。
+ */
+
+body.login-page {
+  --login-ink: #2a1f16;
+  --login-ink-soft: #6b5a45;
+  --login-cream: #f6efe0;
+  --login-walnut: #2b1b10;
+  --login-red: #b83b28;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: 0;
+  background: #7a5230;
+  color: var(--login-ink);
+  font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+  line-break: strict;
+}
+
+/* ---- ヘッダー ---- */
+body.login-page .login-header {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 52px;
+  padding: 4px 20px;
+  background: var(--login-walnut);
+  border-bottom: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .3);
+}
+body.login-page .logo {
+  margin: 0;
+  min-height: 44px;
+  justify-content: flex-start;
+  color: #f3e9d6;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-decoration: none;
+}
+body.login-page .logo:focus-visible { outline: 3px solid var(--login-cream); outline-offset: 2px; border-radius: 4px; }
+
+/* ---- 木目の机 ---- */
+.login-desk {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 48px 16px 56px;
+  background-color: #a06d40;
+  background-image:
+    url(../assets/textures/wood-grain.svg),
+    repeating-linear-gradient(180deg, rgba(0,0,0,0) 0 207px, rgba(25,12,4,.55) 207px 208px, rgba(255,230,190,.12) 208px 209px, rgba(0,0,0,0) 209px),
+    repeating-linear-gradient(180deg, rgba(0,0,0,.05) 0 208px, rgba(255,240,215,.04) 208px 416px, rgba(0,0,0,.09) 416px 624px),
+    radial-gradient(ellipse at 22% 0%, rgba(255,236,205,.22), rgba(255,236,205,0) 62%);
+  background-size: 900px 900px, auto, auto, auto;
+  background-position: -120px -40px, 0 0, 0 0, 0 0;
+  box-shadow: inset 0 0 70px rgba(20, 10, 3, .45);
+}
+.login-wrap { width: 100%; max-width: 400px; }
+
+/* ---- フォルダ形のタブ ---- */
+body.login-page .auth-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 40px;
+  margin: 0;
+  padding: 0 14px;
+  border-bottom: 0;
+}
+body.login-page .auth-tab {
+  flex: 0 0 auto;
+  min-width: 104px;
+  height: 34px;
+  margin: 0;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 10px 10px 0 0;
+  background: #d6c3a0;
+  color: #4a3826;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: inset 0 -3px 4px rgba(0, 0, 0, .12);
+  cursor: pointer;
+}
+body.login-page .auth-tab.active {
+  height: 40px;
+  background: #fffaf0;
+  color: var(--login-ink);
+  box-shadow: none;
+}
+body.login-page .auth-tab:focus-visible { outline: 3px solid var(--login-cream); outline-offset: 2px; }
+
+/* ---- メモ帳 ---- */
+.login-pad {
+  position: relative;
+  background: #fffaf0;
+  border-radius: 0 4px 8px 8px;
+  padding: 26px 20px 22px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 12px 22px rgba(25, 12, 3, .45);
+}
+body.login-page #auth-form { display: flex; flex-direction: column; gap: 16px; }
+.login-field { display: flex; flex-direction: column; gap: 5px; }
+.login-field label { font-size: 13px; font-weight: 700; color: var(--login-ink-soft); }
+.login-field input {
+  width: 100%;
+  height: 48px;
+  padding: 0 12px;
+  border: 1px solid #c9b99a;
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: 16px;
+  color: var(--login-ink);
+  outline: none;
+}
+.login-field input:focus { border-color: var(--login-ink); box-shadow: 0 0 0 1px var(--login-ink); }
+.login-btn {
+  height: 52px;
+  margin-top: 6px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--login-red);
+  color: #fff8ee;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(120, 40, 20, .25);
+}
+.login-btn:hover { background: #a3331f; }
+.login-btn:disabled { opacity: .5; cursor: not-allowed; }
+.login-btn:focus-visible { outline: 3px solid var(--login-ink); outline-offset: 2px; }
+
+body.login-page .error-msg { color: #9a3322; font-size: 13px; margin-top: 12px; }
+body.login-page .plan-info {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed #d8ccb4;
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--login-ink-soft);
+}
+
+/* ---- 机の上の注記 ---- */
+body.login-page .privacy-notice {
+  margin: 22px 6px 0;
+  font-size: 12px;
+  line-height: 1.8;
+  color: #f0e3cb;
+  text-shadow: 0 1px 4px rgba(20, 10, 3, .55);
+}
+body.login-page .privacy-notice a { color: #fff8ee; }
