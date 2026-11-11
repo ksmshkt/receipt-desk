@@ -954,34 +954,63 @@ async function openReceipt(id) {
   setRadioValue('modal_qualified', String(r.is_qualified));
   setRadioValue('modal_tax_rate', String(r.tax_rate));
 
-  const imageContainer = document.getElementById('modal-image-container');
-  const modalImage = document.getElementById('modal-image');
+  // 写真は最初は出さない（読み込みで入力欄がずれないように）。開いた時点で裏で読み込んでおき、「写真」ボタンで重ねて出す
+  setModalPhotoOpen(false);
+  setModalPhotoState('loading');
+  document.getElementById('modal-image').removeAttribute('src');
+  document.getElementById('modal-photo-toggle').classList.toggle('hidden', !r.image_path);
+
+  document.getElementById('modal-overlay').classList.remove('hidden');
 
   if (r.image_path) {
     const { data } = await client.storage.from('receipts').createSignedUrl(r.image_path, 3600);
-    if (data) {
-      modalImage.src = data.signedUrl;
-      imageContainer.classList.remove('hidden');
-    }
-  } else {
-    imageContainer.classList.add('hidden');
+    if (currentReceiptId !== id) return; // 読み込み中に別のレシートを開いた
+    if (data) document.getElementById('modal-image').src = data.signedUrl;
+    else setModalPhotoState('error');
   }
-
-  document.getElementById('modal-overlay').classList.remove('hidden');
 }
+
+function setModalPhotoState(state) {
+  document.getElementById('modal-image-btn').classList.toggle('is-loading', state !== 'ready');
+  document.getElementById('modal-image-status').textContent =
+    state === 'error' ? '写真を読み込めませんでした' : '読み込み中…';
+}
+
+function setModalPhotoOpen(open) {
+  document.getElementById('modal-image-container').classList.toggle('hidden', !open);
+  document.getElementById('modal-photo-toggle').setAttribute('aria-expanded', String(open));
+}
+
+document.getElementById('modal-image').addEventListener('load', (e) => {
+  if (e.target.getAttribute('src')) setModalPhotoState('ready');
+});
+document.getElementById('modal-image').addEventListener('error', (e) => {
+  if (e.target.getAttribute('src')) setModalPhotoState('error');
+});
+document.getElementById('modal-photo-toggle').addEventListener('click', () => {
+  const open = document.getElementById('modal-image-container').classList.contains('hidden');
+  setModalPhotoOpen(open);
+});
+document.getElementById('modal-photo-close').addEventListener('click', () => setModalPhotoOpen(false));
+// 写真の外側（薄暗い部分）を押したら写真だけしまう
+document.getElementById('modal-image-container').addEventListener('click', (e) => {
+  if (e.target.id === 'modal-image-container') setModalPhotoOpen(false);
+});
 
 // Close modal
 document.getElementById('modal-close').addEventListener('click', closeModal);
 // 写真とカードの外側（暗くした机の部分）を押したら閉じる
 document.getElementById('modal-overlay').addEventListener('click', (e) => {
-  if (['modal-overlay', 'modal', 'modal-image-container'].includes(e.target.id)) closeModal();
+  if (['modal-overlay', 'modal'].includes(e.target.id)) closeModal();
 });
-document.getElementById('modal-image-btn').addEventListener('click', () => {
+document.getElementById('modal-image-btn').addEventListener('click', (e) => {
+  if (e.currentTarget.classList.contains('is-loading')) return;
   const src = document.getElementById('modal-image').getAttribute('src');
   if (src) openImageLightbox(src);
 });
 
 function closeModal() {
+  setModalPhotoOpen(false);
   document.getElementById('modal-overlay').classList.add('hidden');
 }
 

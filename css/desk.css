@@ -424,7 +424,7 @@ body.desk-app #add-count-label b { font-family: 'M PLUS 1 Code', monospace; font
   background: #fffdf6;
   border-radius: 4px 4px 8px 8px;
   padding: 12px 0 8px;
-  transform: rotate(-.4deg);
+  /* 傾けない：縦に長い帳簿だと中心からの回転で上端が左、下端が右にずれる */
   box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 10px 18px rgba(25, 12, 3, .42);
 }
 .desk-ledger::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 12px; background: #3a2516; border-radius: 4px 4px 0 0; }
@@ -528,7 +528,7 @@ body.desk-app #image-export-progress { max-width: 568px; margin: 6px auto 0; fon
   overscroll-behavior: contain;
 }
 .desk-modal-close {
-  position: fixed; top: calc(6px + env(safe-area-inset-top)); right: 8px; z-index: 2;
+  position: fixed; top: calc(6px + env(safe-area-inset-top)); right: 8px; z-index: 5;
   height: 44px; padding: 0 12px;
   border: 0; border-radius: 8px;
   background: #24170d; color: var(--desk-cream);
@@ -536,24 +536,62 @@ body.desk-app #image-export-progress { max-width: 568px; margin: 6px auto 0; fon
   display: flex; align-items: center; gap: 5px;
   cursor: pointer;
 }
-.desk-modal-inner { max-width: 420px; min-height: 100%; margin: 0 auto; padding: calc(62px + env(safe-area-inset-top)) 16px 120px; }
-.desk-modal-photo { position: relative; z-index: 1; display: flex; justify-content: center; margin-bottom: -26px; }
+/* カードは閉じるボタンと下のバーの間で縦中央に（画面が低いときは上から並べてスクロール） */
+.desk-modal-inner { max-width: 420px; min-height: 100%; margin: 0 auto; padding: calc(62px + env(safe-area-inset-top)) 16px 120px; display: flex; flex-direction: column; }
+/* 写真：「写真」ボタンで入力欄の上に重ねて出す。外側（薄暗い部分）を押すとしまう */
+.desk-modal-photo {
+  position: fixed; inset: 0; z-index: 3;
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: calc(86px + env(safe-area-inset-top)) 16px 100px;
+  background: rgba(18, 9, 3, .4);
+}
+.desk-modal-photo-frame { position: relative; transform: rotate(-2deg); }
 .desk-modal-photo-btn {
-  position: relative;
-  border: 0; padding: 6px 6px 18px;
+  position: relative; display: block;
+  border: 0; padding: 7px 7px 22px;
   background: #fdfcf8;
-  transform: rotate(-3deg);
-  box-shadow: 0 1px 1px rgba(0, 0, 0, .25), 0 12px 18px rgba(0, 0, 0, .5);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .25), 0 16px 26px rgba(0, 0, 0, .55);
   cursor: zoom-in;
 }
-.desk-modal-photo-btn img { display: block; max-width: min(200px, 60vw); max-height: 300px; background: #eee; }
+.desk-modal-photo-btn.is-loading { cursor: default; }
+.desk-modal-photo-btn.is-loading img { display: none; }
+.desk-modal-photo-status { display: none; }
+.desk-modal-photo-btn.is-loading .desk-modal-photo-status {
+  display: flex; align-items: center; justify-content: center;
+  width: min(240px, 62vw); height: min(320px, 50dvh);
+  background: #ece5d6; color: var(--desk-ink-soft);
+  font-size: 13px; font-weight: 700;
+}
+.desk-modal-photo-btn.is-loading .desk-modal-zoom { display: none; }
 .desk-modal-zoom {
-  position: absolute; right: -12px; bottom: 18px;
-  width: 34px; height: 34px; border-radius: 50%;
+  position: absolute; right: -12px; bottom: 22px;
+  width: 36px; height: 36px; border-radius: 50%;
   background: var(--desk-cream); color: var(--desk-ink);
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, .4);
 }
+.desk-modal-photo-close {
+  position: absolute; top: -16px; right: -16px;
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 0; background: #24170d; color: var(--desk-cream);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .45);
+  cursor: pointer;
+}
+.desk-modal-photo-close:focus-visible, .desk-photo-toggle:focus-visible { outline: 3px solid var(--desk-cream); outline-offset: 2px; }
+/* 日付の行の右端の「写真」ボタン */
+.desk-modal-card .desk-f.desk-f-date { grid-template-columns: 60px minmax(0, 1fr) auto; }
+.desk-photo-toggle {
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 34px; padding: 0 10px;
+  border: 1.5px solid var(--desk-ink); border-radius: 6px;
+  background: transparent; color: var(--desk-ink);
+  font: inherit; font-size: 13px; font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.desk-photo-toggle[aria-expanded="true"] { background: var(--desk-ink); color: #fffdf6; }
+.desk-photo-toggle:focus-visible { outline-color: var(--desk-ink); }
 .desk-modal-card {
   position: relative; z-index: 2;
   background: #fffdf6; border-radius: 3px;
@@ -566,7 +604,7 @@ body.desk-app #image-export-progress { max-width: 568px; margin: 6px auto 0; fon
 .desk-modal-card .desk-f { min-height: 42px; grid-template-columns: 60px minmax(0, 1fr); }
 .desk-modal-card .desk-f-last { border-bottom: 0; }
 .desk-modal-bar {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 3;
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 4;
   background: #f4ecdc;
   border-top: 1px solid #cdbb98;
   box-shadow: 0 -6px 14px rgba(20, 10, 3, .3);
@@ -576,7 +614,8 @@ body.desk-app #image-export-progress { max-width: 568px; margin: 6px auto 0; fon
 .desk-btn-del { background: transparent; color: var(--desk-red-text); border: 1.5px dashed var(--desk-red); }
 .desk-modal-save { margin-left: auto; padding: 0 22px; }
 /* style.css の旧モーダル用ID指定（黒背景・幅100%・余白）を打ち消す */
-body.desk-app #modal-image-container { background: none; display: flex; }
+body.desk-app #modal-image-container { display: flex; align-items: flex-start; justify-content: center; background: rgba(18, 9, 3, .4); }
 body.desk-app #modal-image-container.hidden { display: none; }
-body.desk-app #modal-image { width: auto; max-width: min(200px, 60vw); max-height: 300px; object-fit: contain; }
-body.desk-app #modal-form { margin: 0; }
+body.desk-app #modal-image { display: block; width: auto; max-width: min(300px, 78vw); max-height: calc(100dvh - 250px - env(safe-area-inset-top)); object-fit: contain; background: #eee; }
+body.desk-app .desk-modal-photo-btn.is-loading #modal-image { display: none; }
+body.desk-app #modal-form { margin: auto 0; } /* auto＝縦中央（.desk-modal-inner が縦並びのflex） */
